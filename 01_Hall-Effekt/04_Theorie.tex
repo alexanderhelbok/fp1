@@ -1,0 +1,50 @@
+% !TeX root = Bericht.tex
+% !TeX spellcheck = de_DE
+\section{Grundlagen und Theorie}
+\subsection{Relevante Kräfte}
+In diesem Experiment wirken mehrere Kräfte auf Elektronen, welche im Zusammenspiel die Bewegungsbahn von diesen bestimmt. Dabei relevant sind die Coulombkraft, die Lorentzkraft und als Scheinkraft die Zentripetalkraft.
+
+Für das Experiment wird ein möglichst gutes homogenes Magnetfeld benötigt, welches über eine Helmholtzspule erzeugt wird. Dies ist ein Aufbau der aus zwei in Serie geschalteten Spulen, welche den selben Abstand wie Radius besitzen, besteht. Durch die zylindrische Form der Elektromagneten entsteht ein annähernd homogenes Magnetfeld im Inneren der Spulen.  
+
+Durch Anwenden des Biot-Savart-Gesetzes kann die Magnetfeldstärke auf 
+
+\begin{equation}\label{eqn:H}
+	\vec{B} = \hat{z} \mu_0\frac{8N\,I}{R\sqrt{125}}
+\end{equation}
+%
+bestimmt werden. Dabei ist $N$ die Windungszahl der Spulen, $I$ der Strom der durch diese fließt und \( R \) deren Radius. $\hat{z}$ ist der Einheitsvektor in z-Richtung und $\mu_0$ ist die magnetische Permeabilität von Vakuum. 
+
+Für die Beschleunigung der Elektronen wird ein Potentialunterschied verwendet. Durch diesen Ansatz lässt sich die Endgeschwindigkeit der Elektronen über die Energie berechnen
+
+$$e\,U=\frac{m_{\text{e}}}{2}v^2$$
+%
+, wobei $U$ der Potentialunterschied, $e$ die Elementarladung, $m_{\text{e}}$ die Masse und $v$ die Endgeschwindigkeit vom Elektron ist. Durch auflösen auf die Geschwindigkeit erhält man
+$$v=\sqrt{\frac{2e\,U}{m_{\text{e}}}}.$$
+
+
+Als nächstes wird Lorentzkraft diskutiert. Diese verursacht eine Ablenkung der Elektronen normal zur Bewegungs- und Magnetfeldlinien-Richtung. Dies führt dazu, dass sich die Elektronen auf einer Kreisbahn bewegen. Die so erhaltene Ablenkung ist 
+$$F_\text{L} = e\, v\, B$$
+abhängig von der Ladung $e$ und der bereits diskutierten Geschwindigkeit $v$ und Magnetfelds $B$. Durch Gleichsetzen mit der Zentripetalkraft
+$$F_\text{Z} = m_{\text{e}}\frac{v^2}{r}$$
+ergibt sich
+$$e\,v\,B = F_\text{L} \stackrel{!}{=} F_\text{Z} = m_{\text{e}}\frac{v^2}{r}$$
+$$\Rightarrow e = \frac{v}{B}\frac{m_{\text{e}}}{r}.$$
+Durch einsetzen der Endgeschwindigkeit erhält man
+$$e = \frac{\sqrt{\frac{2e\,U}{m_{\text{e}}}}}{B}\frac{m_{\text{e}}}{r}$$
+\begin{equation}\label{eqn:e}
+	\Rightarrow e = \frac{2Um_{\text{e}}}{B^2r^2}
+\end{equation}
+für die Elementarladung. Für die Bestimmung der spezifischen Ladung wird durch die Masse des Elektrons dividiert:
+\begin{equation}\label{eqn:e/m}
+	\frac{e}{m_{\text{e}}} = \frac{2U}{B^2r^2} = k\frac{U}{r^2}
+\end{equation}
+
+\subsection{Detektion des Elektronenstrahls}
+Um den Radius der Kreisbahn der Elektronen zu bestimmen, muss man diesen erst sichtbar machen. Dies kann man bewerkstelligen, indem man den Kolben mit einem dünnen Gas füllt. Dabei regen die Elektronen die Gasmoleküle an, welche unter Aussendung von Photonen wieder in einen niedrigeren Zustand zurückfällt. In unserem Fall ist der Kolben mit Wasserstoffgas gefüllt, dessen sichtbare Spektrallinien der Balmer-Serie zugeordnet werden und großteils im blauen Bereich liegen. Die Spektrallinien sind in \autoref{fig:Balmer-Series} zu sehen.
+
+\begin{figure}[H]
+	\includegraphics[width=\textwidth]{Balmer-Series}
+	\caption{Balmer-Serie des Wasserstoffspektrums \cite{wiki:Balmer}.}
+	\label{fig:Balmer-Series}
+\end{figure}
+
