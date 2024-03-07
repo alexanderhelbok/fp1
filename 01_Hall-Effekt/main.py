@@ -1,8 +1,5 @@
-import matplotlib.pyplot as plt
-
 from Source import *
 from scipy.optimize import fsolve
-import astropy.constants as const
 
 
 # load data

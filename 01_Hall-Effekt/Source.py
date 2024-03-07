@@ -373,3 +373,4 @@ def get_polling_rate(df):
     t = df["t"][1] - df["t"][0]
     # calculate polling rate and round
     return round(1/t)
+
