@@ -1,30 +1,30 @@
 using DataFrames, Random, LsqFit, Statistics, Measurements, PythonCall, Distributions, Unitful
-# import PythonPlot.plot, PythonPlot.scatter
+import PythonPlot.plot, PythonPlot.scatter
 import Measurements.Measurement
 # pygui(true)
 
 
-# @py import pip 
-# @py pip.main(["install", "mpl_axes_aligner"])
+#@py import pip 
+#@py pip.main(["install", "mpl_axes_aligner"])
 #@py pip.main(["install", "scipy"])
 #@py pip.main(["install", "matplotlib"])
 
-# @py import scipy.signal as ss
-# @py import scipy.optimize as sciop
-# @py import matplotlib.pyplot as plt
-# @py import matplotlib as mpl
-# @py import mpl_axes_aligner as aligner
-# plt.style.use("Source.mplstyle")
+@py import scipy.signal as ss
+@py import scipy.optimize as sciop
+@py import matplotlib.pyplot as plt
+@py import matplotlib as mpl
+@py import mpl_axes_aligner as aligner
+plt.style.use("Source.mplstyle")
 
-# plt.rc("text", usetex=true)  # enable use of LaTeX in matplotlib
-# plt.rc("font", family="sans-serif", serif="Times New Roman", size=14)  # font settings
-# plt.rc("text.latex", preamble="\\usepackage{mtpro2} \\usepackage{siunitx}")
+plt.rc("text", usetex=true)  # enable use of LaTeX in matplotlib
+plt.rc("font", family="sans-serif", serif="Times New Roman", size=14)  # font settings
+plt.rc("text.latex", preamble="\\usepackage{mtpro2} \\usepackage{siunitx}")
 
 function nom(x)
     return Measurements.value(ustrip.(x))
 end
 
-function err(x)
+function myerr(x)
     return Measurements.uncertainty(ustrip.(x))
 end
 
@@ -41,18 +41,18 @@ end
 # end
 
 # missing type combination is x = Vector{Any}, y = Vector{<:Number}
-# function plot(xdata::Union{LinRange{<:Number}, Vector{<:Number}, Vector{<:Measurement}, Vector{<:Quantity}}, ydata::Union{Vector{<:Measurement}, Vector{<:Quantity}}; kwargs...)
-#     plot(nom.(xdata), nom.(ydata); kwargs...)
-# end
+function plot(xdata::Union{LinRange{<:Number}, Vector{<:Number}, Vector{<:Measurement}, Vector{<:Quantity}}, ydata::Union{Vector{<:Measurement}, Vector{<:Quantity}}; kwargs...)
+    plot(nom.(xdata), nom.(ydata); kwargs...)
+end
 
-# # missing type combination is x = Vector{Any}, y = Vector{<:Number}
-# function scatter(xdata::Union{Vector{<:Number}, Vector{<:Measurement}, Vector{<:Quantity}}, ydata::Union{Vector{<:Measurement}, Vector{<:Quantity}}; kwargs...)
-#     scatter(nom.(xdata), nom.(ydata); kwargs...)
-# end
+# missing type combination is x = Vector{Any}, y = Vector{<:Number}
+function scatter(xdata::Union{Vector{<:Number}, Vector{<:Measurement}, Vector{<:Quantity}}, ydata::Union{Vector{<:Measurement}, Vector{<:Quantity}}; kwargs...)
+    scatter(nom.(xdata), nom.(ydata); kwargs...)
+end
 
-# function myerrorbar(xdata, ydata; kwargs...) 
-#     errorbar(nom.(xdata), nom.(ydata), xerr=err.(xdata), yerr=err.(ydata); kwargs...)
-# end
+function myerrorbar(xdata, ydata; kwargs...) 
+    errorbar(nom.(xdata), nom.(ydata), xerr=myerr.(xdata), yerr=myerr.(ydata); kwargs...)
+end
 
 function compile(file::String)
     @eval using Glob
