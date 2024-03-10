@@ -4,8 +4,8 @@ import Measurements.Measurement
 # pygui(true)
 
 
-#@py import pip 
-#@py pip.main(["install", "mpl_axes_aligner"])
+# @py import pip 
+# @py pip.main(["install", "mpl_axes_aligner"])
 #@py pip.main(["install", "scipy"])
 #@py pip.main(["install", "matplotlib"])
 
@@ -18,7 +18,7 @@ plt.style.use("Source.mplstyle")
 
 plt.rc("text", usetex=true)  # enable use of LaTeX in matplotlib
 plt.rc("font", family="sans-serif", serif="Times New Roman", size=14)  # font settings
-plt.rc("text.latex", preamble="\\usepackage{mtpro2} \\usepackage{siunitx}")
+# plt.rc("text.latex", preamble="\\usepackage{mtpro2} \\usepackage{siunitx}")
 
 function nom(x)
     return Measurements.value(ustrip.(x))
