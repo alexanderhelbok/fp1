@@ -1,0 +1,42 @@
+% !TeX program = xelatex
+\documentclass{alex_bericht}
+\usepackage{pdfpages}
+\usepackage{subcaption}
+\usepackage{mhchem}
+\usepackage[super]{nth}
+\begin{document}
+%Seiten ohne Kopf- und Fußzeile sowie Seitenzahl
+\pagenumbering{Roman}
+\input{01_titel}
+
+\input{02_Kurzfassung}
+
+%Inhaltsverzeichnis
+{\hypersetup{linkcolor=black}
+\clearpage
+\tableofcontents
+
+%Verzeichnis aller Bilder
+%\listoffigures
+
+%Verzeichnis aller Tabellen
+%\listoftables}
+\cleardoubleoddpage
+
+\pagenumbering{arabic}
+\input{03_Einleitung}
+
+\input{04_Theorie}
+
+\input{05_Aufbau}
+
+\input{06_Ergebnisse}
+
+\input{07_Diskussion}
+
+%%Literaturverzeichnis
+\printbibliography
+
+%\includepdf[noautoscale]{Unterschriften}
+
+\end{document}

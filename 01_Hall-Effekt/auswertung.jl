@@ -1,13 +1,12 @@
-using CSV, Unitful, Roots, LaTeXStrings, PythonPlot
+using CSV, Roots, LaTeXStrings, PythonPlot
 using PhysicalConstants.CODATA2018: e, k_B
 
 include(string(@__DIR__, "/../Source.jl"))
+# include(string(@__DIR__, "/../SourceStatistics.jl"))
 @py import matplotlib as mpl
 
-plt.rc("text.latex", preamble="\\usepackage{mtpro2} \\usepackage{siunitx} \\usepackage{amsmath}")
 mpl.use("pgf")
 mpl.use("TkAgg")
-plt.rcParams["pgf.texsystem"] = "xelatex"
 
 # define constants
 begin
@@ -124,8 +123,8 @@ interval = 35:length(df.newT)-8
 popt, ci = bootstrap(func, 
                     nom.(1 ./df.newT[interval]), 
                     nom.(logn[interval]), 
-                    xerr=myerr.(1 ./df.newT[interval]), 
-                    yerr=myerr.(logn[interval]) , 
+                    xerr=err.(1 ./df.newT[interval]), 
+                    yerr=err.(logn[interval]) , 
                     p0=[1.0, 1.0], 
                     its=10000, 
                     unc=true,
@@ -136,7 +135,7 @@ Ed = - 2*k_B * popt[1] * u"K" |> u"eV"
 
 # mean of first 6 values
 const_model(x, p) = @. p[1] *x/x
-mean1, ccc = bootstrap(const_model, nom.(1 ./df.newT[1:6]), nom.(n[1:6]), xerr=myerr.(1 ./df.newT[1:6]), yerr=myerr.(n[1:6]), its=10000, unc=true, p0=[1e28])
+mean1, ccc = bootstrap(const_model, nom.(1 ./df.newT[1:6]), nom.(n[1:6]), xerr=err.(1 ./df.newT[1:6]), yerr=err.(n[1:6]), its=10000, unc=true, p0=[1e28])
 println("Ed = ", Ed)
 println("ND - NA = ", mean1[1] * u"1/m^3")
 println(log(mean1[1]))
@@ -173,10 +172,10 @@ ax.add_patch(rect)
 
 axins = ax.inset_axes([0.23, 0.6, 0.3, 0.3])
 
-axins.errorbar(nom.(1 ./ df.newT[1:6]), nom.(logn[1:6]), xerr=myerr.(1 ./ df.newT[1:6]), yerr=myerr.(logn[1:6]), fmt=".", capsize=3, mfc="crimson", mec="k", ms=11, ecolor="k")
-axins.errorbar(nom.(1 ./ df.newT[7:15]), nom.(logn[7:15]), xerr=myerr.(1 ./ df.newT[7:15]), yerr=myerr.(logn[7:15]), fmt=".", capsize=3, mfc="white", mec="k", ms=11, ecolor="k")
+axins.errorbar(nom.(1 ./ df.newT[1:6]), nom.(logn[1:6]), xerr=err.(1 ./ df.newT[1:6]), yerr=err.(logn[1:6]), fmt=".", capsize=3, mfc="crimson", mec="k", ms=11, ecolor="k")
+axins.errorbar(nom.(1 ./ df.newT[7:15]), nom.(logn[7:15]), xerr=err.(1 ./ df.newT[7:15]), yerr=err.(logn[7:15]), fmt=".", capsize=3, mfc="white", mec="k", ms=11, ecolor="k")
 axins.axhline(log(nom(mean1[1])), c="C1", zorder=4)
-axins.fill_between(xlims, log(nom(mean1[1]) + myerr(mean1[1])), log(nom(mean1[1]) - myerr(mean1[1])), alpha=0.3, color="C1")
+axins.fill_between(xlims, log(nom(mean1[1]) + err(mean1[1])), log(nom(mean1[1]) - err(mean1[1])), alpha=0.3, color="C1")
 axins.fill_between(ci.x, ci.c0, ci.c1, alpha=0.3, color="C0")
 
 # change fontsize for axins
@@ -196,7 +195,7 @@ xlabel(L"$T^{-1}\ (\mathrm{K}^{-1})$")
 ylabel(L"$\ln(n\cdot \mathrm{m}^3)$")
 legend(loc=(0.59, 0.4))
 tight_layout()
-savefig(string(@__DIR__, "/bilder/plot1.pdf"), bbox_inches="tight")
+# savefig(string(@__DIR__, "/bilder/plot1.pdf"), bbox_inches="tight")
 end
 
 # ========== Plot2 =========
@@ -223,8 +222,8 @@ logμ = @. log(μ/u"cm^2/(V*s)")
 logT = @. log(df.newT/u"K")
 
 interval1, interval2 = 1:29, 51:length(logT)
-popt2, ci2 = bootstrap(func, nom.(logT[interval1]), nom.(logμ[interval1]), xerr=myerr.(logT[interval1]), yerr=myerr.(logμ[interval1]) , p0=[1.0, 1.0], its=10000, unc=true, xlim=[3.0, 6.5])
-popt3, ci3 = bootstrap(func, nom.(logT[interval2]), nom.(logμ[interval2]), xerr=myerr.(logT[interval2]), yerr=myerr.(logμ[interval2]) , p0=[1.0, 1.0], its=10000, unc=true, xlim=[3.0, 6.5])
+popt2, ci2 = bootstrap(func, nom.(logT[interval1]), nom.(logμ[interval1]), xerr=err.(logT[interval1]), yerr=err.(logμ[interval1]) , p0=[1.0, 1.0], its=10000, unc=true, xlim=[3.0, 6.5])
+popt3, ci3 = bootstrap(func, nom.(logT[interval2]), nom.(logμ[interval2]), xerr=err.(logT[interval2]), yerr=err.(logμ[interval2]) , p0=[1.0, 1.0], its=10000, unc=true, xlim=[3.0, 6.5])
 
 println(popt2, popt3)
 
@@ -277,3 +276,14 @@ n .|> u"m^-3"
 Ed
 
 df.newT
+
+
+
+
+
+using Plots
+
+x = [1:10;]
+y = [1:10;]
+
+plot(x, y, fmt=:png)
