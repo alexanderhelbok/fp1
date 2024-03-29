@@ -60,7 +60,7 @@ afterskip=.5\baselineskip]{section}
 \graphicspath{ {./bilder/} }
 \addbibresource{Literatur.bib}
 
-\sisetup{per-mode = symbol, sticky-per}%
+\sisetup{per-mode = symbol	}%
 \DeclareSIUnit[]\v{\m\per\s}
 \DeclareSIUnit[]\a{\m\per\square\s}
 

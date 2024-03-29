@@ -30,6 +30,10 @@
 \def\theequation{(\orgtheequation)}
 \makeatother
 
+\definecolor{MyBlue}{HTML}{0072B2}
+\definecolor{MyOrange}{HTML}{D55E00}
+\definecolor{MyRed}{HTML}{F00F0F}
+
 \hypersetup{%
 %	colorlinks=true,
 	breaklinks=true,
@@ -48,25 +52,16 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 %
-\titlehead{\includegraphics[width=5cm]{logo.jpg}}
-\title{Hall-Effekt und Leitfähigkeit}
-\author{Alexander Helbok\thanks{\href{mailto:alexander.helbok@student.uibk.ac.at}{alexander.helbok@student.uibk.ac.at}}, Jakob Höck \thanks{\href{mailto:jakob.hoeck@student.uibk.ac.at}{jakob.hoeck@student.uibk.ac.at}},
-Max Koppelstätter\thanks{\href{mailto:max.koppelstaetter@student.uibk.ac.at}{max.koppelstaetter@student.uibk.ac.at}}
-}
-\date{Abgabe: \today}
-\maketitle
-\vfill
+\def\settitle{}
+\input{00_Titel}
 
 \section*{Abstract}
 Dieser Versuch beschäftigt sich mit der Funktionsweise eines Halbleiters sowie dem Hall-Effekt. Dabei wird die van-der-Pauw-Methode angewandt, um den spezifischen Widerstand sowie den Hall-Koeffizienten eines Halbleiters zu bestimmen. Eine Halbleiter-Probe wird in einem Kryostaten von Raumtemperatur ausgehend bis etwa 20 K abgekühlt. Während des Abkühlvorgangs werden die genannten Eigenschaften in kleinen Temperaturschritten aufgezeichnet, wodurch wir feststellen können, ob der Halbleiter n- oder p-dotiert ist. Aus diesen Daten lässt sich auch die Beweglichkeit der Ladungsträger, die Ionisierungsenergie der Donatoren bzw. Akzeptoren, sowie die Streumechanismen im Halbleiter bestimmen. Es wird eine direkte Beobachtung der Matthiessenschen Regel diskutiert, sowie festgestellt, dass es sich bei dem zu untersuchenden Material um n-dotiertes Galliumarsenid handelt.
+\vspace{1cm}
 \newpage
-
-
-\thispagestyle{empty}
 %
 %
 \tableofcontents
-\thispagestyle{empty}
 \cleardoublepage
 \pagenumbering{arabic} 
 %

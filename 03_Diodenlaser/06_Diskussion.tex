@@ -1,0 +1,14 @@
+% !TeX root = Bericht.tex
+% !TeX spellcheck = de_DE
+\section{Interpretation}
+In the first part of the experiment we determined the bragg angle to be $\theta_{\mathrm{B}} = 6.5(8) \unit{mrad}$. The datasheet of the AOM \autocite{AOM} tells us, that the Bragg angle for a laser with a wavelength of \SI{633}{nm} equals \SI{6}{mrad}. Comparing these two values, we see that our measured result is within $1\sigma$ of the literature value. However, our uncertainty is quite high and can be reduced by more accurately determining the distance between \nth{0} and \nth{1} order diffraction beams. 
+
+The reference value for the saturation power is \SI{1}{W}. We measured $\P{sat} = 1.21(3) \unit{W}$, which is significantly above the reference. This could have various reasons: a) the fit is not optimal with values lying systematically above/below the fitcurve and b) neglecting higher diffraction orders, that also receive power. 
+
+According to the data sheet, the insertion loss, is maximally 5\:\%. We measured 9.8(8)\:\%, which means that significantly more energy is lost in the AOM than intended. This could be due to dirt/impurities on the inlet or outlet of the AOM. 
+
+By varying the RF frequency, we obtain a quality factor of $Q_1$ = 4.87(17). The value of the quality factor by adjusting the angle, $Q_2 = 4.5(8)$, is around 8\:\% smaller, but with a much bigger uncertainty. These values are consisten with each other. Comparing the two methods, we conclude that varying the frequency is much more accurate than changing the angle, since the frequency can be assumed to be perfect, whilst manually changing the angle introduces statistical and, much more important, systematic errors, which have to be accounted for.
+
+By analysing the relation between frequency and bragg angle, we conclude that the Bragg angle is increasing linearly with RF frequency. 
+
+In the last part of the experiment, we investigates whether we could retain maximum efficiency at off-resonant frequencies by readjusting the angle. According to our data, maximum efficiency can be achieved at around \SI{90}{MHz}, although the efficiency is relatively constant in the range from \SI{70}{MHz} to \SI{90}{MHz}. Before and after, the efficiency decreases rapidly, especially at higher frequencies. This is probably due to internal geometric constraints acting like low/high pass filters for sound waves.
