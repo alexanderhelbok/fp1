@@ -69,33 +69,33 @@ function compile(file::String)
     mv("$dir/imgen.pdf", "$dir/$file.pdf", force=true)
 end
 
-kwargs = (xminorticksvisible = true,
-    yminorticksvisible = true,
-    spinewidth = 2,
-    xminorticks = IntervalsBetween(4),
-    yminorticks = IntervalsBetween(4),
-    xtickwidth = 2,
-    ytickwidth = 2,
-    xticksize = -14,
-    yticksize = -14,
-    xminorticksize = -7,
-    yminorticksize = -7,
-    xticksmirrored = true,
-    yticksmirrored = true,
-    xgridvisible = false,
-    ygridvisible = false,
-    xgridwidth = 2,
-    ygridwidth = 2,
-    xticklabelsize = 20,
-    yticklabelsize = 20,
-    xticklabelfont = "Times New Roman",
-    yticklabelfont = "Times New Roman",
-    xlabelfont = "Times New Roman",
-    xlabelsize = 24,
-    ylabelfont = "Times New Roman",
-    ylabelsize = 24,
-    xlabelpadding = 10,
-    ylabelpadding = 10)
+# kwargs = (xminorticksvisible = true,
+#     yminorticksvisible = true,
+#     spinewidth = 2,
+#     xminorticks = IntervalsBetween(4),
+#     yminorticks = IntervalsBetween(4),
+#     xtickwidth = 2,
+#     ytickwidth = 2,
+#     xticksize = -14,
+#     yticksize = -14,
+#     xminorticksize = -7,
+#     yminorticksize = -7,
+#     xticksmirrored = true,
+#     yticksmirrored = true,
+#     xgridvisible = false,
+#     ygridvisible = false,
+#     xgridwidth = 2,
+#     ygridwidth = 2,
+#     xticklabelsize = 20,
+#     yticklabelsize = 20,
+#     xticklabelfont = "Times New Roman",
+#     yticklabelfont = "Times New Roman",
+#     xlabelfont = "Times New Roman",
+#     xlabelsize = 24,
+#     ylabelfont = "Times New Roman",
+#     ylabelsize = 24,
+#     xlabelpadding = 10,
+#     ylabelpadding = 10)
 
 
 function chisq(obs, exp; sigma=nothing, dof=nothing, pcount=nothing)
@@ -257,7 +257,7 @@ function bootstrap(fobj, xdata, ydata; xerr=zeros(length(xdata)), yerr=zeros(len
     end
 
     pmean = sum/its
-    perr = sqrt.(its/(its - 1)*(var/its - pmean.^2))
+    perr = sqrt.(abs.(its/(its - 1)*(var/its - pmean.^2)))
 
     ci.c0 = quantile.(eachrow(arr2), 0.5 * (1 - p))
     ci.c1 = quantile.(eachrow(arr2), 1 - 0.5 * (1 - p))
@@ -319,36 +319,36 @@ function errprint(number::Union{Measurement, Quantity}, sigfigs::Int=0)
     return str * u
 end
 
-function newleg(elems::Function, labels, x, y; fig = figure[1, 1], xgap = 0.05, xmarkergap = 0.04, ygap = 0.05, labelsize = 22)
-	# create a temporary axis (necessary for nonlinear axes) to get the relative projection
-	tempax = Axis(fig, backgroundcolor = :transparent)
-	hidedecorations!(tempax)
-	hidespines!(tempax)
-	relative_projection = Makie.camrelative(tempax.scene)
-	# draw legend markers
-	elems(relative_projection, x, y, ygap, xmarkergap)
-	# draw legend labels
-	for (i, label) in enumerate(labels)
-		text!(relative_projection, 
-			"$label", 
-			position=Point2f(x + xgap, y - (i-1)*ygap), 
-			align = (:left, 0.4),
-			fontsize = labelsize,
-			font = "Times New Roman")
-	end
-end
+# function newleg(elems::Function, labels, x, y; fig = figure[1, 1], xgap = 0.05, xmarkergap = 0.04, ygap = 0.05, labelsize = 22)
+# 	# create a temporary axis (necessary for nonlinear axes) to get the relative projection
+# 	tempax = Axis(fig, backgroundcolor = :transparent)
+# 	hidedecorations!(tempax)
+# 	hidespines!(tempax)
+# 	relative_projection = Makie.camrelative(tempax.scene)
+# 	# draw legend markers
+# 	elems(relative_projection, x, y, ygap, xmarkergap)
+# 	# draw legend labels
+# 	for (i, label) in enumerate(labels)
+# 		text!(relative_projection, 
+# 			"$label", 
+# 			position=Point2f(x + xgap, y - (i-1)*ygap), 
+# 			align = (:left, 0.4),
+# 			fontsize = labelsize,
+# 			font = "Times New Roman")
+# 	end
+# end
 
-function mylegend(figure, elems, labels, x, y; fig = figure[1, 1], rgs...)
-	tempax = Axis(fig)
-	hidedecorations!(tempax)
-	hidespines!(tempax)
-	leg_projetion = campixel(tempax.scene)
-	@lift translate!(leg_projetion, Vec2f($(figure.scene.camera.resolution)[1]*x, $(figure.scene.camera.resolution)[2]*y))
-	Legend(leg_projetion, elems, labels; rgs...)
-end
+# function mylegend(figure, elems, labels, x, y; fig = figure[1, 1], rgs...)
+# 	tempax = Axis(fig)
+# 	hidedecorations!(tempax)
+# 	hidespines!(tempax)
+# 	leg_projetion = campixel(tempax.scene)
+# 	@lift translate!(leg_projetion, Vec2f($(figure.scene.camera.resolution)[1]*x, $(figure.scene.camera.resolution)[2]*y))
+# 	Legend(leg_projetion, elems, labels; rgs...)
+# end
 
-legargs = (labelfont = "Times New Roman", 
-    labelsize = 20, 
-    margin = ones(4).*18,
-    patchlabelgap = 10,
-    backgroundcolor = :transparent)
+# legargs = (labelfont = "Times New Roman", 
+#     labelsize = 20, 
+#     margin = ones(4).*18,
+#     patchlabelgap = 10,
+#     backgroundcolor = :transparent)

@@ -9,7 +9,7 @@ include(string(@__DIR__, "/../Source.jl"))
 # mpl.use("TkAgg")
 
 # load data
-calibrationdf = CSV.read(joinpath(@__DIR__, "data0.csv"), DataFrame, header=["gain", "mvpp", "mw"])
+calibrationdf = CSV.read(joinpath(@__DIR__, "data/data0.csv"), DataFrame, header=["gain", "mvpp", "mw"])
 
 fun(x, p) = @. p[1] * x^2
 
@@ -38,7 +38,7 @@ end
 Pout = measurement(0.831, 0.005)
 
 # load data
-tempdf = CSV.read(joinpath(@__DIR__, "data1.csv"), DataFrame, header=["U", "a", "b"], skipto=2)
+tempdf = CSV.read(joinpath(@__DIR__, "data/data1.csv"), DataFrame, header=["U", "a", "b"], skipto=2)
 tempdf.a = measurement.(tempdf.a, 0.01) ./ Pout
 tempdf.b = measurement.(tempdf.b, 0.01) ./ Pout
 
@@ -97,7 +97,7 @@ lines!(ax, ci2.x, func(ci2.x, nom.(popt2)), colormap=:tab10, label="fit")
 # errorbars!(ax2, tempdf.U2, nom.(tempdf.a), err.(tempdf.a), color=:black, label="a", whiskerwidth = 0)
 scatter!(ax2, tempdf.U2, nom.(tempdf.b), colormap = :tab10, markersize=10)
 # errorbars!(ax2, tempdf.U2, nom.(tempdf.a), err.(tempdf.b), color=:black, label="b", whiskerwidth = 0)
-scatter!(ax2, tempdf.U2, nom.(tempdf.a), colormap = :tab10, markersize=10)
+scatter!(ax2, tempdf.U2, nom.(tempdf.a), color=colorant"#ff7f0e", markersize=10)
 xlims!(ax, -0.04, inver(0.95))
 xlims!(ax3, -0.04, inver(0.95))
 xlims!(ax2, -0.04, 0.95)
@@ -128,4 +128,27 @@ print(popt2[1], mvpp_to_mW(popt[2])*2)
 GLMakie.activate!()
 CairoMakie.activate!()
 
-calipopt
+braggang = measurement(6.5, 0.8)
+
+# load data3
+df = CSV.read(joinpath(@__DIR__, "data/data3.csv"), DataFrame, header=["ticks", "a"], skipto=2)
+df.ang = @. measurement.(df.ticks, 0.5) / 25 / 180 *pi
+df.a = measurement.(df.a, 0.01) ./ 0.79
+df.delang = df.ang ./ braggang * 1000
+
+fitsinc(x, p) = @. p[1] * sinc(p[2]/4 * (x - p[3]))^2
+
+popt, ci = bootstrap(fitsinc, nom.(df.delang), nom.(df.a), xerr=err.(df.delang), yerr=err.(df.a), p0=[1., 2., 1., 0.], unc=true)
+
+using PythonPlot
+
+begin
+popt, ci = bootstrap(fitsinc, nom.(df.delang[5:end-5]), nom.(df.a[5:end-5]), xerr=err.(df.delang[5:end-5]), yerr=err.(df.a[5:end-5]), p0=[.6, 4., .8], unc=true, its=10000)
+
+# ax = subplot()[1]
+myerrorbar(df.delang, df.a, fmt="o", label="data")
+plot(ci.x, fitsinc(ci.x, nom.(popt)), label="fit")
+fill_between(ci.x, ci.c0, ci.c1, color="lightblue")
+end
+
+popt
