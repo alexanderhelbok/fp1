@@ -22,6 +22,8 @@ dotcolors = ["deepskyblue", "crimson", "green"]
 linecolors = ["C0", "C1", "C2"]
 starts = [6, 11, 8]
 λ = 670 * u"nm"
+
+colors = ["C0", "C1", "C2", "C3", "C4", "C9"]
 end
 
 # plot data
@@ -97,7 +99,7 @@ end
 begin
 df = CSV.read(joinpath(@__DIR__, "data/T25/Current15.CSV"), DataFrame, header=["t", "V"], skipto=2)
 
-FRS2 = 630
+FSR2 = 630
 
 # find 2 maxima in the data
 maxima, height = ss.find_peaks(df.V, height=0.5, distance=100)
@@ -106,20 +108,16 @@ maxima = pyconvert(Array, maxima)
 
 dt = df.t[maxima[2]] - df.t[maxima[1]]
 
-t_to_f(t) = @. FRS2 / dt * (t - t[1])
+t_to_f(t) = @. FSR2 / dt * (t - t[1])
 
 didx = maxima[2] - maxima[1]
 
-idx_to_f(idx) = @. FRS2 / didx * (idx - 1)
-f_to_idx(f) = @. didx / FRS2 * f + 1 |> round |> Int
-# df.f = @. FRS2 / dt * (df.t - df.t[1])
+idx_to_f(idx) = @. FSR2 / didx * (idx - 1)
+f_to_idx(f) = @. didx / FSR2 * f + 1 |> round |> Int
+# df.f = @. FSR2 / dt * (df.t - df.t[1])
 end
-FRS2/dt
+FSR2/dt
 
-df
-a = [1, 2, 3, 2, 3, 4]
-
-(max, max_idx) = findmax(df.V)
 
 
 currentdf = CSV.read(joinpath(@__DIR__, "data/Istepsize.csv"), DataFrame, header=["I1", "I2", "I3"], skipto=2)
@@ -130,7 +128,7 @@ function get_maximum(df, height; plt=false)
     temparr = []
     # normalize data
     offset = 0.01 / maximum(df.V)
-    gauss(x, p) = @. p[1] * exp(-2 * log(2) * (x - p[2])^2 / p[3]^2) - offset
+    gauss(x, p) = @. p[1] * exp(-4 * log(2) * (x - p[2])^2 / p[3]^2) - offset
 
     df.V /= maximum(df.V)
     # println(mean(df.V))
@@ -223,7 +221,7 @@ for (j, Temp) in enumerate([20, 25, 30])
 
         # if i != 1
         #     if tempmax - modifier > maxima[i-1] + 100
-        #         modifier = modifier + FRS2
+        #         modifier = modifier + FSR2
         #     end
         # end
 
@@ -245,17 +243,15 @@ for (j, Temp) in enumerate([20, 25, 30])
     ax[j-1].plot(currentdf.I1, l(currentdf.I1, y1, y2) .+ shift, c="C0")
     # for (i, interval) in enumerate(intervals[j])
     #     # popt, ci = bootstrap(lin, currentdf.I1[interval.first:interval.last], nom.(maxima[interval.first:interval.last]), yerr=err.(maxima[interval.first:interval.last]), p0=[1., 1.], unc=true, its=100000)
-    #     # ax[j-1].plot(ci.x, lin(ci.x, nom.(popt)), c="C$i")
-    #     ax[j-1].errorbar(currentdf.I1[interval.first:interval.last], nom.(maxima[interval.first:interval.last]), yerr=err.(maxima[interval.first:interval.last]), fmt="o", capsize=3, mfc="C$i", mec="k", ms=7, ecolor="k")
-    #     # ax[j-1].fill_between(ci.x, ci.c0, ci.c1, alpha=0.3, color="C$i")
+    #     # ax[j-1].plot(ci.x, lin(ci.x, nom.(popt)), c=colors[i])
+    #     ax[j-1].errorbar(currentdf.I1[interval.first:interval.last], nom.(maxima[interval.first:interval.last]), yerr=err.(maxima[interval.first:interval.last]), fmt="o", capsize=3, mfc=colors[i], mec="k", ms=7, ecolor="k")
+    #     # ax[j-1].fill_between(ci.x, ci.c0, ci.c1, alpha=0.3, color=colors[i])
 
     #     # println(popt)
     # end
     ax[j-1].set_ylim(0, 1200)
 end
 end
-imshow(Z, aspect="auto", extent=(currentdf.I1[1], currentdf.I1[end], tempdf.f[1], tempdf.f[end]), cmap="seismic")
-# t_to_f(df.t[end])
 
 
 # 2x2 grid of heatmaps
@@ -284,7 +280,7 @@ for (i, Temp) in enumerate(20:30)
     Z[:, i] = tempdf.V[end:-1:1] 
 end
 ax[1, 1].imshow(Z, aspect="auto", extent=(20, 30, tempdf.f[1], tempdf.f[end]), cmap="seismic")
-ax[1, 1].set_title(L"I =  \mathrm{mA}")
+ax[1, 1].set_title(L"I = 35.0(1)\ \mathrm{mA}")
 ax[1, 1].set_xlabel(L"T\ (\mathrm{^\circ C})")
 # change tick direction
 ax[1, 1].tick_params(axis="both", direction="out", which="both", top=false, right=false)
@@ -297,13 +293,30 @@ tight_layout()
 end
 
 
-intervals = [[Interval(1, 6), Interval(7,14), Interval(15, 28), Interval(25, 29), Interval(30, 31)],
-            [Interval(3, 6), Interval(7, 13), Interval(14,22), Interval(23, 25), Interval(26, 27)],
-            []]
+tempdf = CSV.read(joinpath(@__DIR__, "data/T20/Current7.CSV"), DataFrame, header=["t", "V"], skipto=2)
+tempdf.f = t_to_f(tempdf.t)
 
-rest = [[([1, 4], "white"), ([19, 21, 23], "C4")],
-        [([5], "white")],
-        [([4, 13], "white")]]
+tempdf.V
+
+get_maximum(tempdf, 0.85, plt=true)
+
+
+modes = [[[2, 3, 5, 6], 
+        [7, 8, 9, 10, 11, 12, 13, 14], 
+        [15, 16, 17, 18, 20, 22, 24],
+        [19, 21, 23, 25, 26, 27, 28, 29],
+        [30, 31]],
+        [[3, 4, 6],
+        [7, 8, 9, 10, 11, 12, 13],
+        [14, 15, 16, 17, 18, 19, 20, 21, 22],
+        [23, 24, 25],
+        [26, 27]],
+        [[1, 2, 3, 5, 7, 9, 11, 14, 16],
+        [6, 8, 10, 12, 15, 17, 18, 19, 20, 22, 24, 27, 30, 33, 36, 39],
+        [21, 23, 26, 29, 32, 35, 38, 42, 45],
+        [25, 28, 31, 34, 37, 41, 44, 47, 50, 53],
+        [40, 43, 46, 49, 52],
+        [48, 51]]]
 
 begin
 lin(x, p) = @. p[1] * x + p[2]
@@ -315,10 +328,10 @@ end
 
 df, tempdf = DataFrame(), DataFrame()
 y1, y2, shift = 0, 0, 0
-ax = subplots(1, 1, figsize=(7, 4.5), sharex=true)[1]
-# for (j, Temp) in enumerate([20, 25, 30])
-for (j, Temp) in enumerate([20])
-    j = 1
+ax = subplots(3, 1, figsize=(7, 9), sharex=true)[1]
+for (j, Temp) in enumerate([20, 25, 30])
+# for (j, Temp) in enumerate([20])
+    # j = 3
     maxima, maxima_I = [], []
     for i in 1:26
         println(i)
@@ -328,7 +341,7 @@ for (j, Temp) in enumerate([20])
 
         # clip tempdf according to linear function
         if j == 1
-            if i < 10
+            if i < 6
                 y1, y2, shift = 600, -300, 500
             else
                 y1, y2, shift = 1200, 300, 500
@@ -356,176 +369,170 @@ for (j, Temp) in enumerate([20])
         df = vcat(df, tempdf)
     end
     if j == 1
-        maxima[12:end] .-= FRS2
+        maxima[8:end] .-= FSR2
     end
     # shift maxima
     maxima = maxima .- nom(maxima[1])
 
+    # calculate finesse
+    Finesse = @. FSR2 / err(maxima)
+    println(Finesse)
+
     poptall, ciall = bootstrap(lin, maxima_I, nom.(maxima), yerr=err.(maxima), p0=[1., 1.], unc=true, its=10000)
 
-    ax.errorbar(maxima_I, nom.(maxima), yerr=err.(maxima), fmt="o", capsize=3, mfc="white", mec="k", ms=7, ecolor="k")
-    ax.plot(maxima_I, lin(maxima_I, nom.(poptall)), c="gray", zorder=0, lw=2, alpha=0.5)
-    if j != 3
-        for (i, interval) in enumerate(intervals[j])
+    ax[j-1].errorbar(maxima_I, nom.(maxima), yerr=err.(maxima), fmt="o", capsize=3, mfc="white", mec="k", ms=7, ecolor="k")
+    ax[j-1].plot(ciall.x, lin(ciall.x, nom.(poptall)), c="gray", zorder=0, lw=2, alpha=0.5, ls="--")
+   
+    for (k, mode) in enumerate(modes[j])
+        # println(mode)
+        tempmax, tempmax_I = maxima[mode], maxima_I[mode]
+        popt, ci = bootstrap(lin, tempmax_I, nom.(tempmax), yerr=err.(tempmax), p0=[1., 1.], unc=true, its=10000, xlimconst=true, xlim=1)
 
-            popt, ci = bootstrap(lin, maxima_I[interval.first:interval.last], nom.(maxima[interval.first:interval.last]), yerr=err.(maxima[interval.first:interval.last]), p0=[1., 1.], unc=true, its=100000)
-            ax.plot(ci.x, lin(ci.x, nom.(popt)), c="C$i")
-            ax.errorbar(maxima_I[interval.first:interval.last], nom.(maxima[interval.first:interval.last]), yerr=err.(maxima[interval.first:interval.last]), fmt="o", capsize=3, mfc="C$i", mec="k", ms=7, ecolor="k")
-            # ax[j-1].fill_between(ci.x, ci.c0, ci.c1, alpha=0.3, color="C$i")
-
-            # println(popt)
-        end
-    elseif j == 3
-        for (k, cut) in enumerate(cuts[2:end])
-            tempmax, tempmax_I = maxima[maxima .> cut], maxima_I[maxima .> cut]
-            tempmax, tempmax_I = tempmax[tempmax .< cuts[k]], tempmax_I[tempmax .< cuts[k]]
-            
-            popt, ci = bootstrap(lin, tempmax_I, nom.(tempmax), yerr=err.(tempmax), p0=[1., 1.], unc=true, its=10000)
-            
-            ax.plot(tempmax_I, lin(tempmax_I, nom.(popt)), c="C$k", zorder=0, lw=2, alpha=0.5)
-            ax.errorbar(tempmax_I, nom.(tempmax), yerr=err.(tempmax), fmt="o", capsize=3, mfc="C$k", mec="k", ms=7, ecolor="k")
-        end
+        ax[j-1].plot(ci.x, lin(ci.x, nom.(popt)), c=colors[k], zorder=0, lw=2, alpha=0.5)
+        ax[j-1].errorbar(tempmax_I, nom.(tempmax), yerr=err.(tempmax), fmt="o", capsize=3, mfc=colors[k], mec="k", ms=7, ecolor="k")
     end
-    for k in rest[j]
-        ax.errorbar(maxima_I[k[1]], nom.(maxima[k[1]]), yerr=err.(maxima[k[1]]), fmt="o", capsize=3, mfc=k[2], mec="k", ms=7, ecolor="k")
-    end
+    ax[j-1].set_title(latexstring("T = $Temp.0(5)\\ \\mathrm{^\\circ C}"))
+    ax[j-1].set_ylabel(L"\Delta f\ (\mathrm{GHz})")
+    
     # ax.set_ylim(0, 1200)
 end
+
+xlims, ylims = ax[2].get_xlim(), ax[2].get_ylim()
+
+# legend
+errorbar(1, 1, xerr=1, yerr=1, fmt=".", capsize=3,  mfc="silver", mec="k", ms=11, ecolor="k", label=L"\textrm{Data}")
+plot(1, 1, c="gray", label=L"\textrm{fit mode}")
+plot(1, 1, c="gray", ls="--", label=L"\textrm{fit all}")
+
+legax = ax[2].twinx()
+legax.fill_between((1, 2), 1, 1, alpha=1, color="white", ec="k", label=latexstring(L"\textrm{other}"))
+for (i, c) in enumerate(colors)
+    legax.fill_between((1, 2), 1, 1, alpha=1, color=c, ec="k", label=latexstring("\\textrm{mode}\\ $i"))
 end
 
-maxima[maxima .< 0]
+legax.set_axis_off()
+ax[2].tick_params(right=true, which="both")
 
-cuts = [50, -20,  -100, -150, -200, -280, -400]
+ax[2].set_xlim(xlims)
+ax[2].set_ylim(ylims)
 
-rest[1][1]
-tempmax = maxima[maxima .< -280]
-tempmax = tempmax[tempmax .> -400]
+# ax.legend()
+legax.legend(loc="lower center", ncols=2, bbox_to_anchor =(0.63, -1.3))
+ax[2].legend(bbox_to_anchor =(0.23, -1.15), loc="lower center")
 
-begin    
-df, tempdf = DataFrame(), DataFrame()
-Z = zeros(6000, 11)
-# modifier = 0
-# y1, y2, shift = 0, 0, 0
-ax = subplots(figsize=(7, 4.5), sharex=true)[1]
-# maxima, maxima_I = [], []
-for (i, Temp) in enumerate(20:30)
-    println(i)
-    tempdf = CSV.read(joinpath(@__DIR__, "data/Tempsweep/T$Temp.CSV"), DataFrame, header=["t", "V"], skipto=2)
-    tempdf.f = t_to_f(tempdf.t)
-
-    Z[:, i] = tempdf.V[end:-1:1] 
-
-    df = vcat(df, tempdf)
-end
-
-# shift maxima
-# maxima = maxima .- nom(maximum(maxima))
-
-# Z = Z[:, end:-1:1]
-
-ax.imshow(Z, aspect="auto", extent=(20, 30, 0, 1270), cmap="seismic")
-# ax.errorbar(maxima_I, nom.(maxima), yerr=err.(maxima), fmt="o", capsize=3, mfc="white", mec="k", ms=7, ecolor="k")
-# ax.plot(currentdf.I1, l(currentdf.I1, y1, y2), c="C0")
-# ax.plot(currentdf.I1, l(currentdf.I1, y1, y2) .+ shift, c="C0")
-# for (i, interval) in enumerate(intervals[j])
-#     # popt, ci = bootstrap(lin, currentdf.I1[interval.first:interval.last], nom.(maxima[interval.first:interval.last]), yerr=err.(maxima[interval.first:interval.last]), p0=[1., 1.], unc=true, its=100000)
-#     # ax[j-1].plot(ci.x, lin(ci.x, nom.(popt)), c="C$i")
-#     ax[j-1].errorbar(currentdf.I1[interval.first:interval.last], nom.(maxima[interval.first:interval.last]), yerr=err.(maxima[interval.first:interval.last]), fmt="o", capsize=3, mfc="C$i", mec="k", ms=7, ecolor="k")
-#     # ax[j-1].fill_between(ci.x, ci.c0, ci.c1, alpha=0.3, color="C$i")
-
-#     # println(popt)
-# end
-# ax[j-1].set_ylim(0, 1200)
+ax[2].set_xlabel(L"I\ (\mathrm{mA})")
+tight_layout()
+subplots_adjust(hspace=0.3)
+savefig(string(@__DIR__, "/bilder/fitI.pdf"), bbox_inches="tight")
 end
 
 
-
-df
-
-
-for i in 20:25
-    println(i)
-    df = CSV.read(joinpath(@__DIR__, "data/T30/Current$i.CSV"), DataFrame, header=["t", "V"], skipto=2)
-    df.f = t_to_f(df.t)
-
-    # df.V = savitzky_golay(df.V, 201, 2).y
-
-    # normalize data
-    offset = 0.01 / maximum(df.V)
-    gauss(x, p) = @. p[1] * exp(-2 * log(2) * (x - p[2])^2 / p[3]^2) - offset
-
-    df.V /= maximum(df.V)
-    # println(mean(df.V))
-    if mean(df.V) < 0.5
-        # get two maxima
-        max, height = ss.find_peaks(df.V, height=0.5, distance=f_to_idx(40))
-        max = pyconvert(Array, max) .+ 1
-
-        ax = subplots(figsize=(7, 4.5))[1]
-        ax.plot(df.f, df.V, label="data")
-        
-        threshhold = f_to_idx(25)
-        for mid in max
-            # start, stop = f_to_idx(mid - 50), f_to_idx(mid + 50)
-                
-            if mid - threshhold < 1
-                start, stop = 1, 2*threshhold
-            elseif mid + threshhold > length(df.f)
-                start, stop = length(df.f) - 2*threshhold, length(df.f) 
-            else
-                start, stop = mid - threshhold, mid + threshhold
-            end
-
-            popt, perr, ci = bootstrap(gauss, df.f[start:stop], df.V[start:stop], p0=[1.35, idx_to_f(mid), 30, 0.06])
-            ax.plot(ci.x, gauss(ci.x, nom.(popt)), label="fit")
-        end
-        ax.scatter(df.f[max], df.V[max], label="maxima", color="C1")
-    end
-end
-
-begin
-df = CSV.read(joinpath(@__DIR__, "data/T25/Current8.CSV"), DataFrame, header=["t", "V"], skipto=2)
-df.f = t_to_f(df.t)
-df.V /= maximum(df.V)
-get_maximum(df, 0.91, plt=true)
-end
-max, height = ss.find_peaks(df.V, height=0.6, distance=f_to_idx(40))
-max = pyconvert(Array, max) .+ 1
-
-begin
-plot(df.f, df.V)
-scatter(df.f[max], df.V[max])
-hlines(0.6, df.f[1], df.f[end])
-end
-
-df = df[df.f .> l(df.f, 800, 400), :]
-
-df
-myerrorbar(currentdf.I1, maxima, fmt="o", capsize=3, mfc="white", mec="k", ms=7, ecolor="k")
-for (i, interval) in enumerate(intervals[1])
-    imshow(Z, aspect="auto", extent=(currentdf.I1[end], currentdf.I1[1], -df.f[1], -df.f[end]), cmap="Blues")
-    popt, ci = bootstrap(lin, currentdf.I1[interval.first:interval.last], nom.(maxima[interval.first:interval.last]), yerr=err.(maxima[interval.first:interval.last]), p0=[1., 1.], unc=true)
-    plot(ci.x, lin(ci.x, nom.(popt)), c="C$i")
-    myerrorbar(currentdf.I1[interval.first:interval.last], maxima[interval.first:interval.last], fmt="o", capsize=3, mfc="C$i", mec="k", ms=7, ecolor="k")
-    fill_between(ci.x, ci.c0, ci.c1, alpha=0.3, color="C$i")
-
-    println(popt)
-end
-maxima
 
 # voigt profile as convolution of gaussian and lorentzian
 gauss(x, p) = @. p[1] * exp(-2 * log(2) * (x - p[2])^2 / p[3]^2) - 0.01
 
 
-tempdf = CSV.read(joinpath(@__DIR__, "data/T30/Current24.CSV"), DataFrame, header=["t", "V"], skipto=2)
+tempdf = CSV.read(joinpath(@__DIR__, "data/Tempsweep/T20.CSV"), DataFrame, header=["t", "V"], skipto=2)
 tempdf.f = t_to_f(tempdf.t)
-
-tempdf.V[l(currentdf.I1[1], y1, y2) .> tempdf.f] *= 0
 
 tempdf.V
 
 # tempdf.I = currentdf.I1[i] * ones(length(tempdf.t))
 tempdf.f = t_to_f(tempdf.t)
 
-get_maximum(tempdf, plt=true)
+get_maximum(tempdf, 0.8, plt=true)
 tempdf.V = savitzky_golay(tempdf.V, 201, 2).y
+
+begin
+modes = [[4, 5, 6], [7, 8], [9, 12], [10, 13], [11, 14]]
+function l(x, y1, y2)
+    a = (y2 - y1) / (Temps[end] - Temps[1])
+    b = y1 - a * Temps[1]
+    return @. a * x + b
+end
+    
+df, tempdf = DataFrame(), DataFrame()
+Temps = [20:1:30;]
+Z = zeros(6000, length(Temps))
+y1, y2, shift = 0, 0, 0
+maxima, maxima_I = [], []
+for (i, Temp) in enumerate(Temps)
+    println(i)
+    tempdf = CSV.read(joinpath(@__DIR__, "data/Tempsweep/T$Temp.CSV"), DataFrame, header=["t", "V"], skipto=2)
+    tempdf.f = t_to_f(tempdf.t)
+
+    Z[:, i] = tempdf.V[end:-1:1] 
+
+    # clip tempdf according to linear function
+    y1, y2, shift = 600, -150, 650
+    
+    tempdf.V[l(Temps[i], y1, y2) .> tempdf.f] *= 0 
+    tempdf.V[l(Temps[i], y1, y2) .+ shift .< tempdf.f] *= 0
+
+    tempmax = get_maximum(tempdf, 0.7)
+
+    # if i != 1
+    #     if tempmax - modifier > maxima[i-1] + 100
+    #         modifier = modifier + FSR2
+    #     end
+    # end
+
+    # append tempmax to maxima
+    maxima = [maxima; tempmax]
+    maxima_I = [maxima_I; Temps[i] * ones(length(tempmax))]
+
+    df = vcat(df, tempdf)
+end
+# shift maxima
+maxima .-= nom(maxima[1])
+end
+
+begin
+ax = subplots(figsize=(7, 3.5), sharex=true)[1]
+
+poptall, ciall = bootstrap(lin, maxima_I, nom.(maxima), yerr=err.(maxima), p0=[1., 1.], unc=true, its=10000)
+
+ax.plot(ciall.x, lin(ciall.x, nom.(poptall)), c="gray", zorder=0, lw=2, alpha=0.5, ls="--")
+
+# ax.imshow(Z, aspect="auto", extent=(x[1], x[end], 0, 1270), cmap="seismic")
+ax.errorbar(maxima_I, nom.(maxima), yerr=err.(maxima), fmt="o", capsize=3, mfc="white", mec="k", ms=7, ecolor="k")
+# ax.plot(Temps, l(Temps, y1, y2), c="C0")
+# ax.plot(Temps, l(Temps, y1, y2) .+ shift, c="C0")
+
+for (k, mode) in enumerate(modes)
+    # println(mode)
+    tempmax, tempmax_I = maxima[mode], maxima_I[mode]
+    popt, ci = bootstrap(lin, tempmax_I, nom.(tempmax), yerr=err.(tempmax), p0=[1., 1.], unc=true, its=10000, xlim=0.5, xlimconst=true)
+    
+    ax.plot(ci.x, lin(ci.x, nom.(popt)), c=colors[k], zorder=0, lw=2, alpha=0.5)
+    ax.errorbar(tempmax_I, nom.(tempmax), yerr=err.(tempmax), fmt="o", capsize=3, mfc=colors[k], mec="k", ms=7, ecolor="k")
+end
+
+xlims, ylims = ax.get_xlim(), ax.get_ylim()
+
+# legend
+errorbar(1, 1, xerr=1, yerr=1, fmt=".", capsize=3,  mfc="silver", mec="k", ms=11, ecolor="k", label=L"\textrm{Data}")
+plot(1, 1, c="gray", label=L"\textrm{fit mode}")
+plot(1, 1, c="gray", ls="--", label=L"\textrm{fit all}")
+
+legax = ax.twinx()
+legax.fill_between((1, 2), 1, 1, alpha=1, color="white", ec="k", label=latexstring(L"\textrm{other}"))
+for (i, c) in enumerate(colors[1:end-1])
+    legax.fill_between((1, 2), 1, 1, alpha=1, color=c, ec="k", label=latexstring("\\textrm{mode}\\ $i"))
+end
+
+legax.set_axis_off()
+ax.tick_params(right=true, which="both")
+
+ax.set_xlabel(L"T\ (\mathrm{^\circ C})")
+ax.set_ylabel(L"\Delta f\ (\mathrm{GHz})") 
+
+ax.set_xlim(xlims)
+ax.set_ylim(ylims)
+
+ax.legend()
+legax.legend(loc=(0.02, 0.05))
+
+tight_layout()
+# savefig(string(@__DIR__, "/bilder/fitTemp.pdf"), bbox_inches="tight")
+end

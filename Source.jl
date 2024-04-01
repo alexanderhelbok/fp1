@@ -192,7 +192,7 @@ function de(fit, xdata, ydata, bounds; mut=0.8, crossp=0.7, popsize=20, its=1000
 end
 
 function bootstrap(fobj, xdata, ydata; xerr=zeros(length(xdata)), yerr=zeros(length(ydata)), 
-    p=0.95, its=1000, samples=nothing, p0=nothing, smoothing=false, unc=false, xlim=nothing, redraw=true)
+    p=0.95, its=1000, samples=nothing, p0=nothing, smoothing=false, unc=false, xlim=0.1, xlimconst=false, redraw=true)
     """
     Bootstrap fit including confidence bands to a function fobj(xdata, p...) with length(p) parameters.
     Parameters:
@@ -233,11 +233,11 @@ function bootstrap(fobj, xdata, ydata; xerr=zeros(length(xdata)), yerr=zeros(len
     var = zeros(length(p0))
     sum = zeros(length(p0))
     # initialize DataFrame for confidence band
-    if xlim === nothing
+    if 0 <= xlim < 2 && xlimconst == false 
         span = maximum(xdata) - minimum(xdata)
-        ci = DataFrame(x=range(minimum(xdata) - span/10, maximum(xdata) + span/10, length=1000), c0=Vector(undef, 1000), c1=Vector(undef, 1000), mean=Vector(undef, 1000))
-    elseif xlim == 0
-        ci = DataFrame(x=range(minimum(xdata), maximum(xdata), length=1000), c0=Vector(undef, 1000), c1=Vector(undef, 1000), mean=Vector(undef, 1000))
+        ci = DataFrame(x=range(minimum(xdata) - span*xlim, maximum(xdata) + span*xlim, length=1000), c0=Vector(undef, 1000), c1=Vector(undef, 1000), mean=Vector(undef, 1000))
+    elseif xlimconst == true
+        ci = DataFrame(x=range(minimum(xdata) - xlim, maximum(xdata) + xlim, length=1000), c0=Vector(undef, 1000), c1=Vector(undef, 1000), mean=Vector(undef, 1000))
     else
         ci = DataFrame(x=range(xlim[1], xlim[2], length=1000), c0=Vector(undef, 1000), c1=Vector(undef, 1000), mean=Vector(undef, 1000))
     end
