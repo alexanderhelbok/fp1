@@ -192,7 +192,7 @@ function de(fit, xdata, ydata, bounds; mut=0.8, crossp=0.7, popsize=20, its=1000
 end
 
 function bootstrap(fobj, xdata, ydata; xerr=zeros(length(xdata)), yerr=zeros(length(ydata)), 
-    p=0.95, its=1000, samples=nothing, p0=nothing, smoothing=false, unc=false, xlim=0.1, xlimconst=false, redraw=true)
+    p=0.95, its=1000, samples=nothing, p0=nothing, smoothing=false, unc=false, xlim=0.1, xlimconst=false, redraw=false)
     """
     Bootstrap fit including confidence bands to a function fobj(xdata, p...) with length(p) parameters.
     Parameters:

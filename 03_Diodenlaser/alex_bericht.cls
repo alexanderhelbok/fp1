@@ -12,17 +12,17 @@
 \setmainfont[Mapping=tex-text]{Times New Roman}
 \RequirePackage[backend=biber, abbreviate=true,doi=false,style=numeric-comp,giveninits=true,sorting=none]{biblatex}
 \RequirePackage[english]{babel}
-\RequirePackage{xifthen, xstring, csquotes, etoolbox}
+\RequirePackage{xifthen, xstring, etoolbox}
 \RequirePackage[dvipsnames]{xcolor}
 \RequirePackage[export]{adjustbox}
-%\RequirePackage{mtpro2, lipsum}
-%\pdfmapfile{=mtpro2.map}
-\RequirePackage{mathtools, amsthm, amsfonts, siunitx, physics, chemformula, empheq}
+\RequirePackage{mtpro2, lipsum}
+\pdfmapfile{=mtpro2.map}
+\RequirePackage{mathtools, amsthm, amsfonts, siunitx, physics, chemformula, empheq, amssymb}
 \RequirePackage{enumitem, multicol, tcolorbox, array, booktabs, vwcol}
 \tcbuselibrary{breakable,skins}
 \RequirePackage[headsepline]{scrlayer-scrpage}
 \RequirePackage[font=footnotesize, bf, format=plain, font=normalsize]{caption}
-\RequirePackage{graphicx, wrapfig, float, url, nth, subcaption}
+\RequirePackage{graphicx, wrapfig, float, url, nth, subcaption, csquotes}
 \RequirePackage[
 	pdftitle={GP2 Bericht},
 	pdfsubject={},

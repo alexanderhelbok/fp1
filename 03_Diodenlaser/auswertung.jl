@@ -38,6 +38,7 @@ for Temp in 1:3
     # fit line to data
     popt, ci = bootstrap(lin, nom.(tempdf.I)[starts[Temp]:end], nom.(tempdf.P)[starts[Temp]:end], p0=[0.1, 0.1], unc=true)
     println("η = $(popt[1]), I_s = $(popt[2])")
+    # println("chisq =  $(chisq(nom.(tempdf.P)[starts[Temp]:end], lin(nom.(tempdf.I)[starts[Temp]:end], popt), pcount=2))")
     η = [η; popt[1]]
 
     ax.scatter(nom.(tempdf.I[starts[Temp]:end]), nom.(tempdf.P[starts[Temp]:end]), c=dotcolors[Temp], s=35, edgecolor="k", zorder=10)
@@ -122,13 +123,35 @@ FSR2/dt
 
 currentdf = CSV.read(joinpath(@__DIR__, "data/Istepsize.csv"), DataFrame, header=["I1", "I2", "I3"], skipto=2)
 
+cauchy(x, x0, g) = @. 1 / ( pi * g * ( 1 + ( ( x - x0 )/ g )^2 ) )
+gauss( x, x0, s) = @. 1/ sqrt(2 * pi * s^2 ) * exp( - (x-x0)^2 / ( 2 * s^2 ) )
+
+function pseudo_voigt(x, p)
+    # fg = 2 * s * sqrt( 2 * log(2) )
+    # fl = 2 * g
+    fg = p[3]
+    fl = p[4]
+    f = abs( fg^5 +  2.69269 * fg^4 * fl + 2.42843 * fg^3 * fl^2 + 4.47163 * fg^2 * fl^3 + 0.07842 * fg * fl^4+ fl^5)^(1/5)
+    eta = 1.36603 * ( fl / f ) - 0.47719 * ( fl / f )^2 + 0.11116 * ( f / fl )^3
+    return @. p[1] * ( eta * cauchy( x, p[2], f) + ( 1 - eta ) * gauss( x, p[2], f ) )
+end
 
 function get_maximum(df, height; plt=false)
     # df.V = savitzky_golay(df.V, 201, 2).y
     temparr = []
     # normalize data
     offset = 0.01 / maximum(df.V)
-    gauss(x, p) = @. p[1] * exp(-4 * log(2) * (x - p[2])^2 / p[3]^2) - offset
+    # gauss(x, p) = @. p[1] * exp(-4 * log(2) * (x - p[2])^2 / p[3]^2) - offset
+
+    function pseudo_voigt(x, p)
+        # fg = 2 * s * sqrt( 2 * log(2) )
+        # fl = 2 * g
+        fg = p[3]
+        fl = p[4]
+        f = abs( fg^5 +  2.69269 * fg^4 * fl + 2.42843 * fg^3 * fl^2 + 4.47163 * fg^2 * fl^3 + 0.07842 * fg * fl^4+ fl^5)^(1/5)
+        eta = 1.36603 * ( fl / f ) - 0.47719 * ( fl / f )^2 + 0.11116 * ( f / fl )^3
+        return @. p[1] * ( eta * cauchy( x, p[2], f) + ( 1 - eta ) * gauss( x, p[2], f ) ) - offset
+    end
 
     df.V /= maximum(df.V)
     # println(mean(df.V))
@@ -155,17 +178,27 @@ function get_maximum(df, height; plt=false)
                 start, stop = mid - threshhold, mid + threshhold
             end
 
-            popt, perr, ci = bootstrap(gauss, df.f[start:stop], df.V[start:stop], p0=[1.35, idx_to_f(mid), 30, 0.06])
-            temparr = [temparr; measurement(popt[2], popt[3])]
+            # popt, perr, ci = bootstrap(gauss, df.f[start:stop], df.V[start:stop], p0=[1.35, idx_to_f(mid), 30, 0.06])
+            popt, perr, ci = bootstrap(pseudo_voigt, df.f[start:stop], df.V[start:stop], p0=[10., idx_to_f(mid), 1., 2.], redraw=true)
+            fV =  0.5346*popt[4] + sqrt(0.2166*popt[4]^2 + popt[3]^2)
+            # temparr = [temparr; measurement(popt[2], popt[3])]
+            temparr = [temparr; measurement(popt[2], fV)]
             if plt
-                ax.plot(ci.x, gauss(ci.x, nom.(popt)), label="fit")
+                # ax.plot(ci.x, gauss(ci.x, nom.(popt)), label="fit")
+                ax.plot(ci.x, pseudo_voigt(ci.x, nom.(popt)), label="fit")
             end
         end
     end
     return temparr
 end
     
+for i in 11:20
+    tempdf = CSV.read(joinpath(@__DIR__, "data/T30/Current$i.CSV"), DataFrame, header=["t", "V"], skipto=2)
+    tempdf.f = t_to_f(tempdf.t)
 
+    get_maximum(tempdf, 0.85, plt=true)
+    # title(i)
+end
 
 intervals = [[Interval(3, 12), Interval(13,19), Interval(20, 24)],
             [Interval(3, 5), Interval(6, 12), Interval(13,21), Interval(22, 24)],
@@ -266,7 +299,7 @@ for (j, Temp) in enumerate([20, 25, 30])
         Z[:, i] = tempdf.V[end:-1:1] 
     end
     ax[round(Int, j/4), (j-1)%2].imshow(Z, aspect="auto", extent=(currentdf.I1[1], currentdf.I1[end], tempdf.f[1], tempdf.f[end]), cmap="seismic")
-    ax[round(Int, j/4), (j-1)%2].set_title(latexstring("T = $Temp.0(5)\\ \\mathrm{^\\circ C}"))
+    ax[round(Int, j/4), (j-1)%2].set_title(latexstring("T = $Temp.0(2)\\ \\mathrm{^\\circ C}"))
     ax[round(Int, j/4), (j-1)%2].set_xlabel(L"I\ (\mathrm{mA})")
 
     ax[round(Int, j/4), (j-1)%2].tick_params(axis="both", direction="out", which="both", top=false, right=false)
@@ -292,15 +325,7 @@ tight_layout()
 # savefig(string(@__DIR__, "/bilder/heatmaps.pdf"), bbox_inches="tight")
 end
 
-
-tempdf = CSV.read(joinpath(@__DIR__, "data/T20/Current7.CSV"), DataFrame, header=["t", "V"], skipto=2)
-tempdf.f = t_to_f(tempdf.t)
-
-tempdf.V
-
-get_maximum(tempdf, 0.85, plt=true)
-
-
+begin
 modes = [[[2, 3, 5, 6], 
         [7, 8, 9, 10, 11, 12, 13, 14], 
         [15, 16, 17, 18, 20, 22, 24],
@@ -318,7 +343,6 @@ modes = [[[2, 3, 5, 6],
         [40, 43, 46, 49, 52],
         [48, 51]]]
 
-begin
 lin(x, p) = @. p[1] * x + p[2]
 function l(x, y1, y2)
     a = (y2 - y1) / (currentdf.I1[end] - currentdf.I1[1])
@@ -332,7 +356,7 @@ ax = subplots(3, 1, figsize=(7, 9), sharex=true)[1]
 for (j, Temp) in enumerate([20, 25, 30])
 # for (j, Temp) in enumerate([20])
     # j = 3
-    maxima, maxima_I = [], []
+    maxima, maxima_I, diffs = [], [],[]
     for i in 1:26
         println(i)
         tempdf = CSV.read(joinpath(@__DIR__, "data/T$Temp/Current$i.CSV"), DataFrame, header=["t", "V"], skipto=2)
@@ -366,7 +390,16 @@ for (j, Temp) in enumerate([20, 25, 30])
         maxima = [maxima; tempmax]
         maxima_I = [maxima_I; currentdf.I1[i] * ones(length(tempmax))]
 
+        if j == 3
+            diffs = [diffs; diff(tempmax)]
+            println(diff(tempmax))
+        end
+
         df = vcat(df, tempdf)
+    end
+    if j == 3
+        println(diffs)
+        println(mean(diffs))
     end
     if j == 1
         maxima[8:end] .-= FSR2
@@ -379,8 +412,10 @@ for (j, Temp) in enumerate([20, 25, 30])
     println(Finesse)
 
     poptall, ciall = bootstrap(lin, maxima_I, nom.(maxima), yerr=err.(maxima), p0=[1., 1.], unc=true, its=10000)
+    println("all : $(poptall[1])")
 
     ax[j-1].errorbar(maxima_I, nom.(maxima), yerr=err.(maxima), fmt="o", capsize=3, mfc="white", mec="k", ms=7, ecolor="k")
+    xlims, ylims = ax[j-1].get_xlim(), ax[j-1].get_ylim()
     ax[j-1].plot(ciall.x, lin(ciall.x, nom.(poptall)), c="gray", zorder=0, lw=2, alpha=0.5, ls="--")
    
     for (k, mode) in enumerate(modes[j])
@@ -388,16 +423,19 @@ for (j, Temp) in enumerate([20, 25, 30])
         tempmax, tempmax_I = maxima[mode], maxima_I[mode]
         popt, ci = bootstrap(lin, tempmax_I, nom.(tempmax), yerr=err.(tempmax), p0=[1., 1.], unc=true, its=10000, xlimconst=true, xlim=1)
 
+        println("mode $k : $(popt[1])")
+
         ax[j-1].plot(ci.x, lin(ci.x, nom.(popt)), c=colors[k], zorder=0, lw=2, alpha=0.5)
         ax[j-1].errorbar(tempmax_I, nom.(tempmax), yerr=err.(tempmax), fmt="o", capsize=3, mfc=colors[k], mec="k", ms=7, ecolor="k")
     end
-    ax[j-1].set_title(latexstring("T = $Temp.0(5)\\ \\mathrm{^\\circ C}"))
+    ax[j-1].set_title(latexstring("T = $Temp.0(2)\\ \\mathrm{^\\circ C}"))
     ax[j-1].set_ylabel(L"\Delta f\ (\mathrm{GHz})")
     
+    ax[j-1].set_xlim(xlims)
+    ax[j-1].set_ylim(ylims)
+
     # ax.set_ylim(0, 1200)
 end
-
-xlims, ylims = ax[2].get_xlim(), ax[2].get_ylim()
 
 # legend
 errorbar(1, 1, xerr=1, yerr=1, fmt=".", capsize=3,  mfc="silver", mec="k", ms=11, ecolor="k", label=L"\textrm{Data}")
@@ -413,9 +451,6 @@ end
 legax.set_axis_off()
 ax[2].tick_params(right=true, which="both")
 
-ax[2].set_xlim(xlims)
-ax[2].set_ylim(ylims)
-
 # ax.legend()
 legax.legend(loc="lower center", ncols=2, bbox_to_anchor =(0.63, -1.3))
 ax[2].legend(bbox_to_anchor =(0.23, -1.15), loc="lower center")
@@ -423,7 +458,7 @@ ax[2].legend(bbox_to_anchor =(0.23, -1.15), loc="lower center")
 ax[2].set_xlabel(L"I\ (\mathrm{mA})")
 tight_layout()
 subplots_adjust(hspace=0.3)
-savefig(string(@__DIR__, "/bilder/fitI.pdf"), bbox_inches="tight")
+# savefig(string(@__DIR__, "/bilder/fitI.pdf"), bbox_inches="tight")
 end
 
 
@@ -491,6 +526,7 @@ begin
 ax = subplots(figsize=(7, 3.5), sharex=true)[1]
 
 poptall, ciall = bootstrap(lin, maxima_I, nom.(maxima), yerr=err.(maxima), p0=[1., 1.], unc=true, its=10000)
+println("all : $(poptall[1])")
 
 ax.plot(ciall.x, lin(ciall.x, nom.(poptall)), c="gray", zorder=0, lw=2, alpha=0.5, ls="--")
 
@@ -502,7 +538,8 @@ ax.errorbar(maxima_I, nom.(maxima), yerr=err.(maxima), fmt="o", capsize=3, mfc="
 for (k, mode) in enumerate(modes)
     # println(mode)
     tempmax, tempmax_I = maxima[mode], maxima_I[mode]
-    popt, ci = bootstrap(lin, tempmax_I, nom.(tempmax), yerr=err.(tempmax), p0=[1., 1.], unc=true, its=10000, xlim=0.5, xlimconst=true)
+    popt, ci = bootstrap(lin, tempmax_I, nom.(tempmax), yerr=err.(tempmax), p0=[1., -300.], unc=true, xlim=0.5, xlimconst=true)
+    println("mode $k : $((popt[1]))")
     
     ax.plot(ci.x, lin(ci.x, nom.(popt)), c=colors[k], zorder=0, lw=2, alpha=0.5)
     ax.errorbar(tempmax_I, nom.(tempmax), yerr=err.(tempmax), fmt="o", capsize=3, mfc=colors[k], mec="k", ms=7, ecolor="k")
@@ -536,3 +573,5 @@ legax.legend(loc=(0.02, 0.05))
 tight_layout()
 # savefig(string(@__DIR__, "/bilder/fitTemp.pdf"), bbox_inches="tight")
 end
+
+mean(diffs[5:end])
