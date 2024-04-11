@@ -291,7 +291,7 @@ end
 begin
 df, tempdf = DataFrame(), DataFrame()
 Z = zeros(6000, 26)
-ax = subplots(2, 2, figsize=(10, 7.5), sharey=true)[1]
+ax = subplots(2, 2, figsize=(8, 6), sharey=true)[1]
 for (j, Temp) in enumerate([20, 25, 30])
     for i in 1:26
         tempdf = CSV.read(joinpath(@__DIR__, "data/T$Temp/Current$i.CSV"), DataFrame, header=["t", "V"], skipto=2)
@@ -322,7 +322,7 @@ ax[1, 0].set_ylabel(L"\Delta f\ (\mathrm{GHz})")
 ax[0, 0].set_ylabel(L"\Delta f\ (\mathrm{GHz})")
 
 tight_layout()
-# savefig(string(@__DIR__, "/bilder/heatmaps.pdf"), bbox_inches="tight")
+savefig(string(@__DIR__, "/bilder/heatmaps.pdf"), bbox_inches="tight")
 end
 
 begin

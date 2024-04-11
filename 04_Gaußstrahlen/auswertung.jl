@@ -33,30 +33,44 @@ println("w2_theo = $(λ*f/(π*popt[1]*u"µm") |> u"µm"), w2_exp = $(popt2[1]), 
 # plot data
 begin
 # ax = subplots()[1]
-myerrorbar(data.z, data.w1, fmt="o", label="Messung 1")
-plot(ci.x, w(ci.x, nom.(popt)), label="Fit 1")
-fill_between(ci.x, ci.c0, ci.c1, alpha=0.3)
+myerrorbar(data.z, data.w1, fmt=".k", capsize=3, label="Messung 1")
+
+xlims, ylims = xlim(), ylim()
+
+plot(ci.x, w(ci.x, nom.(popt)), label="Fit")
+fill_between(ci.x, ci.c0, ci.c1, alpha=0.3, label=L"2 \sigma \mathrm{confidence band}")
 
 xlabel(L"z (\mathrm{cm})")
-ylabel(L"w (\mathrm{µm})")
+ylabel(L"w (\mu\mathrm{m})")
+
+xlim(xlims)
+ylim(ylims)
 
 tight_layout()
 legend()
+# savefig(string(@__DIR__, "/bilder/task1.pdf"), bbox_inches="tight")
 end
 
 # plot data
 begin
 # ax = subplots()[1]
-myerrorbar(data.z, data.w2, fmt="o", label="Messung 1")
-plot(ci2.x, w(ci2.x, nom.(popt2)), label="Fit 1")
-# plot(ci2.x, w(ci2.x, [82, 7.6]), label="Fit 1")
-fill_between(ci2.x, ci2.c0, ci2.c1, alpha=0.3)
+myerrorbar(data.z, data.w2, fmt="o", label=L"\mathrm{Data}")
 
-xlabel(L"z (\mathrm{cm})")
-ylabel(L"w (\mathrm{µm})")
+xlims, ylims = xlim(), ylim()
+
+plot(ci2.x, w(ci2.x, nom.(popt2)), label=L"\mathrm{Fit}")
+# plot(ci2.x, w(ci2.x, [82, 7.6]), label="Fit 1")
+fill_between(ci2.x, ci2.c0, ci2.c1, alpha=0.3, label=L"2 \sigma \mathrm{confidence band}")
+
+xlabel(L"z\ (\mathrm{cm})")
+ylabel(L"w\ (\mu\mathrm{m})")
+
+xlim(xlims)
+ylim(ylims)
 
 tight_layout()
 legend()
+# savefig(string(@__DIR__, "/bilder/task1.pdf"), bbox_inches="tight")
 end
 
 df

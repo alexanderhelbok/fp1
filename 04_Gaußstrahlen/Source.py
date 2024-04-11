@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib import colors
-from labellines import labelLine, labelLines
+# from labellines import labelLine, labelLines
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter, AutoMinorLocator)
 from matplotlib.figure import figaspect
 from scipy.optimize import curve_fit
@@ -341,31 +341,31 @@ def autokorrelation(t, y):
     return w, Psi/divi
 
 
-def chi2_confidence_plot(ax, p=None, xmax=50, xvals=None):
-    """
-    Plot the reduced chi2 against degrees of freedom (dof) and draw confidence intervals for a given set of percentiles
-    :param ax: ax object to plot on
-    :param p: list of percentiles to plot (default: 1, 2, 3 sigma = [0.667, 0.95, 0.998])
-    :param xmax: maximum x value (dof) to plot (default: 50)
-    :param xvals: relative x position to plot the contour labels at (default: 0.4, 0.55, 0.7)
-    :return: None
-    """
-    if p is None:
-        p = [0.667, 0.95, 0.998]
-    if xvals is None:
-        xvals = [0.4, 0.55, 0.7]
-    if len(p) != len(xvals):
-        raise ValueError("p and xvals must be of the same length")
-
-    cmap = sns.color_palette("rocket", as_cmap=True)
-    dof = np.linspace(1, xmax, 250)
-    for i, percentile in enumerate(p):
-        ax.plot(dof, chi2.ppf((1+percentile)/2, dof)/dof, c=cmap(2/9 + i/5))
-        ax.plot(dof, chi2.ppf((1-percentile)/2, dof)/dof, c=cmap(2/9 + i/5))
-
-    lines = plt.gca().get_lines()
-    for (i, line) in enumerate(lines):
-        labelLine(line, xvals[i // 2]*xmax, label=r'${}\%$'.format(p[i//2]), align=True)
+# def chi2_confidence_plot(ax, p=None, xmax=50, xvals=None):
+#     """
+#     Plot the reduced chi2 against degrees of freedom (dof) and draw confidence intervals for a given set of percentiles
+#     :param ax: ax object to plot on
+#     :param p: list of percentiles to plot (default: 1, 2, 3 sigma = [0.667, 0.95, 0.998])
+#     :param xmax: maximum x value (dof) to plot (default: 50)
+#     :param xvals: relative x position to plot the contour labels at (default: 0.4, 0.55, 0.7)
+#     :return: None
+#     """
+#     if p is None:
+#         p = [0.667, 0.95, 0.998]
+#     if xvals is None:
+#         xvals = [0.4, 0.55, 0.7]
+#     if len(p) != len(xvals):
+#         raise ValueError("p and xvals must be of the same length")
+#
+#     cmap = sns.color_palette("rocket", as_cmap=True)
+#     dof = np.linspace(1, xmax, 250)
+#     for i, percentile in enumerate(p):
+#         ax.plot(dof, chi2.ppf((1+percentile)/2, dof)/dof, c=cmap(2/9 + i/5))
+#         ax.plot(dof, chi2.ppf((1-percentile)/2, dof)/dof, c=cmap(2/9 + i/5))
+#
+#     lines = plt.gca().get_lines()
+#     for (i, line) in enumerate(lines):
+#         labelLine(line, xvals[i // 2]*xmax, label=r'${}\%$'.format(p[i//2]), align=True)
 
 
 def get_polling_rate(df):
