@@ -159,7 +159,7 @@ begin
 
     legend()
     tight_layout()
-    savefig(string(@__DIR__, "/bilder/multilorentzian.pdf"), bbox_inches="tight")
+    # savefig(string(@__DIR__, "/bilder/multilorentzian.pdf"), bbox_inches="tight")
 end
 
 println("Δν1 = $(popt[5] - popt[2]), Δν2 = $(popt[8] - popt[5])")
@@ -219,9 +219,20 @@ end
 
 
 
-df = CSV.read(joinpath(@__DIR__, "data/T0003ALL.CSV"), DataFrame, header=["t", "CH1", "peak1", "CH2", "peak2"], skipto=17)
+tempdf = CSV.read(joinpath(@__DIR__, "data/T0003ALL.CSV"), DataFrame, header=["t", "CH1", "peak1", "CH2", "peak2"], skipto=17)
+df = tempdf
+arr = [df.CH2[end-1299:end]; df.CH2[1:end-1300]]
+df[1:1000, :] = tempdf[end-999:end, :]
+df[2001:end, :] = tempdf[1:end-2000, :]
 df.CH2 /= maximum(df.CH2)
+
+# apply modulo to data
+df = [df[1200:end, :], df[1:1200, :]]
+
+x = [1:1:length(df.t);]
+
 # df = df[1200:3200, :]
 df.f = t_to_f(df.t)
 plot(df.f, df.CH1)
-plot(df.f, df.CH2)
+plot(x, df.CH2)
+plot(x/4000, arr)
