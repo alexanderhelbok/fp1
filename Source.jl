@@ -19,7 +19,7 @@ include("SourceStatistics.jl")
 plt.style.use("Source.mplstyle")
 
 plt.rc("text", usetex=true)  # enable use of LaTeX in matplotlib
-plt.rc("font", family="sans-serif", size=14)  # font settings
+plt.rc("font", family="sans-serif", serif="Times New Roman", size=14)  # font settings
 plt.rc("text.latex", preamble="\\usepackage{mtpro2} \\usepackage{siunitx} \\usepackage{amsmath}")
 plt.rcParams["pgf.texsystem"] = "xelatex"
 
