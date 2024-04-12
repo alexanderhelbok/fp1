@@ -120,6 +120,7 @@ end
 
 lorentzian(x, p) = @. p[1] / ( 1 + ( ( x - p[2] )/ p[3] )^2 ) + p[4]
 
+fourlorentzian(x, p) = @. p[1] / ( 1 + ( ( x - p[2] )/ p[3] )^2 ) + p[4] / ( 1 + ( ( x - p[5] )/ p[6] )^2 ) + p[7] / ( 1 + ( ( x - p[8] )/ p[9] )^2 ) + p[10]
 multilorentzian(x, p) = @. p[1] / ( 1 + ( ( x - p[2] )/ p[3] )^2 ) + p[4] / ( 1 + ( ( x - p[5] )/ p[6] )^2 ) + p[7] / ( 1 + ( ( x - p[8] )/ p[9] )^2 ) + p[10]
 
 begin
@@ -162,6 +163,46 @@ begin
 end
 
 println("Δν1 = $(popt[5] - popt[2]), Δν2 = $(popt[8] - popt[5])")
+
+begin
+    df = CSV.read(joinpath(@__DIR__, "data/T0004.CSV"), DataFrame, header=["t", "CH1", "peak1", "CH2", "peak2"], skipto=17)
+    df.CH2 /= maximum(df.CH2)
+    # df = df[1:end, :]
+    
+    FSR = c_0/(2*L) / u"GHz"|> NoUnits
+    
+    # find 2 maxima in the data
+    maxima, height = ss.find_peaks(df.CH2, height=0.2, distance=100)
+    # convert to julia array
+    maxima = pyconvert(Array, maxima) .+ 1
+    
+    dt = df.t[maxima[3]] - df.t[maxima[2]]
+    
+    t_to_f(t) = @. FSR / dt * (t - t[1])
+    df.f = t_to_f(df.t)
+    
+    didx = maxima[3] - maxima[2]
+    
+    idx_to_f(idx) = @. FSR / didx * (idx - 1)
+    f_to_idx(f) = @. didx / FSR * f + 1 |> round |> Int
+
+    popt, perr, ci = bootstrap(fourlorentzian, df.f, df.CH2, p0=[1., idx_to_f(maxima[1]), 0.006, 1., idx_to_f(maxima[2]), 0.006, 1., idx_to_f(maxima[3]), 0.006, 1., idx_to_f(maxima[4]), 0.006, 0.], redraw=true)
+    
+    # calculate finesse
+    R = 0.98
+    F1 = FSR / (2 * popt[3])
+    F2 = FSR / (2 * popt[6])
+    F3 = FSR / (2 * popt[9])
+    F4 = FSR / (2 * popt[12])
+    Ftheo = π * sqrt(R) / (1 - R)
+    println("F1 = $F1, F2 = $F2, F3 = $F3, F4 = $F4, Ftheo = $Ftheo")
+
+    scatter(df.f, df.CH2)
+    plot(ci.x, fourlorentzian(ci.x, nom.(popt)), color="C1")
+    # scatter(df.f[maxima], df.CH2[maxima])
+end
+
+popt
 
 for mid in maxima
     threshhold = f_to_idx(0.3)
