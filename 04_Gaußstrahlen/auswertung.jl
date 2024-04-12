@@ -120,7 +120,7 @@ end
 
 lorentzian(x, p) = @. p[1] / ( 1 + ( ( x - p[2] )/ p[3] )^2 ) + p[4]
 
-fourlorentzian(x, p) = @. p[1] / ( 1 + ( ( x - p[2] )/ p[3] )^2 ) + p[4] / ( 1 + ( ( x - p[5] )/ p[6] )^2 ) + p[7] / ( 1 + ( ( x - p[8] )/ p[9] )^2 ) + p[10]
+fourlorentzian(x, p) = @. p[1] / ( 1 + ( ( x - p[2] )/ p[3] )^2 ) + p[4] / ( 1 + ( ( x - p[5] )/ p[6] )^2 ) + p[7] / ( 1 + ( ( x - p[8] )/ p[9] )^2 ) + p[10] / ( 1 + ( ( x - p[11] )/ p[12] )^2 ) + p[13]
 multilorentzian(x, p) = @. p[1] / ( 1 + ( ( x - p[2] )/ p[3] )^2 ) + p[4] / ( 1 + ( ( x - p[5] )/ p[6] )^2 ) + p[7] / ( 1 + ( ( x - p[8] )/ p[9] )^2 ) + p[10]
 
 begin
@@ -139,16 +139,16 @@ begin
     x = range(ci.x[1], ci.x[end], length=10000)
     plot(x, multilorentzian(x, nom.(popt)), label=L"\mathrm{multilorentzian\ fit}", color="C1", zorder=5)
 
-    arrow(0.55, 0.5,  0.2, 0., length_includes_head=true, overhang=.1, head_width=0.03, head_length=0.03, transform=ax.transAxes, fc="gray")
+    arrow(0.55, 0.5,  0.2, 0., length_includes_head=true, overhang=.1, head_width=0.03, head_length=0.03, transform=ax.transAxes, fc="white")
     arrow(0.55, 0.5, -0.25, 0., length_includes_head=true, overhang=.1, head_width=0.03, head_length=0.03, transform=ax.transAxes, fc="white")
     ax.text(0.45, 0.53, L"\nu_{\mathrm{FSR}} \stackrel{!}{=} 1\ \mathrm{GHz}", fontsize=14, transform=ax.transAxes)
 
-    arrow(0.4, 0.2,  0.1, 0., length_includes_head=true, overhang=.1, head_width=0.03, head_length=0.03, transform=ax.transAxes)
-    arrow(0.4, 0.2, -0.1, 0., length_includes_head=true, overhang=.1, head_width=0.03, head_length=0.03, transform=ax.transAxes)
+    arrow(0.4, 0.2,  0.1, 0., length_includes_head=true, overhang=.1, head_width=0.03, head_length=0.03, transform=ax.transAxes, fc="white")
+    arrow(0.4, 0.2, -0.1, 0., length_includes_head=true, overhang=.1, head_width=0.03, head_length=0.03, transform=ax.transAxes, fc="white")
     ax.text(0.34, 0.23, L"0.51\ \mathrm{GHz}", fontsize=14, transform=ax.transAxes)
 
-    arrow(0.65, 0.2,  0.1, 0., length_includes_head=true, overhang=.1, head_width=0.03, head_length=0.03, transform=ax.transAxes)
-    arrow(0.65, 0.2, -0.11, 0., length_includes_head=true, overhang=.1, head_width=0.03, head_length=0.03, transform=ax.transAxes)
+    arrow(0.65, 0.2,  0.1, 0., length_includes_head=true, overhang=.1, head_width=0.03, head_length=0.03, transform=ax.transAxes, fc="white")
+    arrow(0.65, 0.2, -0.11, 0., length_includes_head=true, overhang=.1, head_width=0.03, head_length=0.03, transform=ax.transAxes, fc="white")
     ax.text(0.59, 0.23, L"0.49\ \mathrm{GHz}", fontsize=14, transform=ax.transAxes)
 
     xlabel(L"\nu\ (\mathrm{GHz})")
@@ -162,6 +162,7 @@ begin
     # savefig(string(@__DIR__, "/bilder/multilorentzian.pdf"), bbox_inches="tight")
 end
 
+popt
 println("Δν1 = $(popt[5] - popt[2]), Δν2 = $(popt[8] - popt[5])")
 
 begin
@@ -186,7 +187,7 @@ begin
     idx_to_f(idx) = @. FSR / didx * (idx - 1)
     f_to_idx(f) = @. didx / FSR * f + 1 |> round |> Int
 
-    popt, perr, ci = bootstrap(fourlorentzian, df.f, df.CH2, p0=[1., idx_to_f(maxima[1]), 0.006, 1., idx_to_f(maxima[2]), 0.006, 1., idx_to_f(maxima[3]), 0.006, 1., idx_to_f(maxima[4]), 0.006, 0.], redraw=true)
+    popt, ci = bootstrap(fourlorentzian, df.f, df.CH2, p0=[1., idx_to_f(maxima[1]), 0.006, 1., idx_to_f(maxima[2]), 0.006, 1., idx_to_f(maxima[3]), 0.006, 1., idx_to_f(maxima[4]), 0.006, 0.], redraw=false, unc=true)
     
     # calculate finesse
     R = 0.98
@@ -195,44 +196,56 @@ begin
     F3 = FSR / (2 * popt[9])
     F4 = FSR / (2 * popt[12])
     Ftheo = π * sqrt(R) / (1 - R)
-    println("F1 = $F1, F2 = $F2, F3 = $F3, F4 = $F4, Ftheo = $Ftheo")
+    println("F1 = $F1, F2 = $F2, F3 = $F3, F4 = $F4, Ftheo = $Ftheo, Fexp = $(mean([F1, F2, F3, F4]))")
 
     scatter(df.f, df.CH2)
     plot(ci.x, fourlorentzian(ci.x, nom.(popt)), color="C1")
+    # plot(ci.x, fourlorentzian(ci.x, [1., idx_to_f(maxima[1]), 0.006, 1., idx_to_f(maxima[2]), 0.006, 1., idx_to_f(maxima[3]), 0.006, 1., idx_to_f(maxima[4]), 0.006, 0.]), color="C0")
     # scatter(df.f[maxima], df.CH2[maxima])
 end
 
 popt
 
-for mid in maxima
-    threshhold = f_to_idx(0.3)
-    start, stop = mid - threshhold, mid + threshhold
-    # mid
-    popt, perr, ci = bootstrap(lorentzian, df.f[start:stop], df.CH2[start:stop], p0=[1, idx_to_f(mid), 0.006, -0.02], redraw=false)
 
-    # begin
-    scatter(df.f[start:stop], df.CH2[start:stop])
-    # plot(x, lorentzian(x, [1, 0.43, 0.006, -0.02]))
-    plot(ci.x, lorentzian(ci.x, nom.(popt)), label="lorentzian")
-    # legend()
-end
-
-
-
-tempdf = CSV.read(joinpath(@__DIR__, "data/T0003ALL.CSV"), DataFrame, header=["t", "CH1", "peak1", "CH2", "peak2"], skipto=17)
-df = tempdf
+begin
+df = CSV.read(joinpath(@__DIR__, "data/T0003ALL.CSV"), DataFrame, header=["t", "CH1", "peak1", "CH2", "peak2"], skipto=17)
 arr = [df.CH2[end-1299:end]; df.CH2[1:end-1300]]
-df[1:1000, :] = tempdf[end-999:end, :]
-df[2001:end, :] = tempdf[1:end-2000, :]
-df.CH2 /= maximum(df.CH2)
+arr /= maximum(arr)
 
-# apply modulo to data
-df = [df[1200:end, :], df[1:1200, :]]
+maxima, height = ss.find_peaks(arr, height=0.4, distance=100)
+# convert to julia array
+maxima = pyconvert(Array, maxima) .+ 1
+
+didx = maxima[5] - maxima[1]
+
+idx_to_f(idx) = @. FSR / didx * (idx - 1)
+f_to_idx(f) = @. didx / FSR * f + 1 |> round |> Int
 
 x = [1:1:length(df.t);]
+f = idx_to_f(x)
 
-# df = df[1200:3200, :]
-df.f = t_to_f(df.t)
-plot(df.f, df.CH1)
-plot(x, df.CH2)
-plot(x/4000, arr)
+popt1, ci1 = bootstrap(fourlorentzian, f[1:2500], arr[1:2500], p0=[1., idx_to_f(maxima[1]), 0.006, 1., idx_to_f(maxima[2]), 0.006, 1., idx_to_f(maxima[3]), 0.006, 1., idx_to_f(maxima[4]), 0.006, 0.], redraw=false, unc=true, xlim=0)
+popt2, ci2 = bootstrap(fourlorentzian, f[2501:end], arr[2501:end], p0=[1., idx_to_f(maxima[5]), 0.006, 1., idx_to_f(maxima[6]), 0.006, 1., idx_to_f(maxima[7]), 0.006, 1., idx_to_f(maxima[8]), 0.006, 0.], redraw=false, unc=true, xlim=0)
+
+ax = subplots(figsize=(7, 3.5))[1]
+
+scatter(f[1:2500], arr[1:2500], s=10, label=L"\mathrm{data}")
+scatter(f[2501:end], arr[2501:end], s=10, c="C0")
+plot(ci1.x, fourlorentzian(ci1.x, nom.(popt1)), color="C1", label=L"\mathrm{multilorentzian\ fits}")
+plot(ci2.x, fourlorentzian(ci2.x, nom.(popt2)), color="C1")
+
+arrow(0.55, 0.83,  0.27, 0., length_includes_head=true, overhang=.1, head_width=0.03, head_length=0.03, transform=ax.transAxes, fc="white")
+arrow(0.55, 0.83, -0.33, 0., length_includes_head=true, overhang=.1, head_width=0.03, head_length=0.03, transform=ax.transAxes, fc="white")
+ax.text(0.45, 0.86, L"\nu_{\mathrm{FSR}} \stackrel{!}{=} 1\ \mathrm{GHz}", fontsize=14, transform=ax.transAxes)
+
+xlabel(L"\nu\ (\mathrm{GHz})")
+ylabel(L"V\ \mathrm{(arb.u.)}")
+
+xlim(-0.04, 1.6)
+ylims = ylim()
+ylim(ylims[0], ylims[1] + 0.3)
+
+legend(loc=(0.29, 0.5))
+tight_layout()
+# savefig(string(@__DIR__, "/bilder/multilorentzian2.pdf"), bbox_inches="tight")
+end

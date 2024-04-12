@@ -129,7 +129,7 @@ ax[0, 0].set_ylabel("pixel", labelpad=15)
 ax[1, 0].set_ylabel("pixel", labelpad=15)
 
 plt.tight_layout()
-plt.savefig("/home/taco/Documents/fp1/04_Gaußstrahlen/bilder/gaussmodes.pdf", bbox_inches='tight')
+# plt.savefig("/home/taco/Documents/fp1/04_Gaußstrahlen/bilder/gaussmodes.pdf", bbox_inches='tight')
 plt.show()
 
 

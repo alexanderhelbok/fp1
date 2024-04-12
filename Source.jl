@@ -229,10 +229,16 @@ function bootstrap(fobj, xdata, ydata; xerr=zeros(length(xdata)), yerr=zeros(len
         samples = round(Int, samples)
     end
 
+    # if no errors are given and no redraw is requested, only one iteration is necessary
+    if xerr == zeros(length(xdata)) && yerr == zeros(length(ydata)) && redraw == false
+        its = 1
+    end
+
     # initialize array for parameters and interpolated values for each iteration
     arr2 = Matrix{Float64}(undef, 1000, its)
     var = zeros(length(p0))
     sum = zeros(length(p0))
+    sigma = 0
     # initialize DataFrame for confidence band
     if 0 <= xlim < 2 && xlimconst == false 
         span = maximum(xdata) - minimum(xdata)
@@ -249,7 +255,9 @@ function bootstrap(fobj, xdata, ydata; xerr=zeros(length(xdata)), yerr=zeros(len
             ind = [1:length(xdata);]
         end
         newx, newy = rand.(Normal.(xdata[ind], xerr[ind])), rand.(Normal.(ydata[ind], yerr[ind]))
-        popt = curve_fit(fobj, newx, newy, p0).param
+        fit = curve_fit(fobj, newx, newy, p0)
+        popt = fit.param
+        sigma = stderror(fit)
         arr2[:, i] = fobj(ci.x, popt)
 
         sum += popt
@@ -258,7 +266,13 @@ function bootstrap(fobj, xdata, ydata; xerr=zeros(length(xdata)), yerr=zeros(len
     end
 
     pmean = sum/its
-    perr = sqrt.(abs.(its/(its - 1)*(var/its - pmean.^2)))
+
+    # calculate the error of the parameters, if no bootsrapping is done, the error is the fit error
+    if xerr == zeros(length(xdata)) && yerr == zeros(length(ydata)) && redraw == false
+        perr = sigma
+    else
+        perr = sqrt.(abs.(its/(its - 1)*(var/its - pmean.^2)))
+    end
 
     ci.c0 = quantile.(eachrow(arr2), 0.5 * (1 - p))
     ci.c1 = quantile.(eachrow(arr2), 1 - 0.5 * (1 - p))
