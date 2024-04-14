@@ -29,8 +29,11 @@ popt2, ci2 = bootstrap(w, nom.(data.z), nom.(data.w2), xerr=err.(data.z), yerr=e
 chi2 = chisq(nom.(data.w1), w(nom.(data.z), popt), sigma=err.(data.w1), pcount=2)
 chi2 = chisq(nom.(data.w2), w(nom.(data.z), popt2), sigma=err.(data.w2), pcount=2)
 
-println("w1 = $(popt[1]), z1 = $(popt[2])")
-println("w2_theo = $(λ*f/(π*popt[1]*u"µm") |> u"µm"), w2_exp = $(popt2[1]), z2 = $(popt2[2]), $(popt2[2] + measurement(2.5, 0.2))")
+w1 = popt[1] * u"µm"
+w2 = popt2[1] * u"µm"
+println("w1 = $w0, z1 = $(popt[2])")
+println("w2_theo = $(λ*f/(π*w1) |> u"µm"), w2_exp = $(w2), z2 = $(popt2[2]), $(popt2[2] + measurement(2.5, 0.2))")
+println(sqrt((f*w1*λ)^2/(π^2*w1^4 + f^2*λ^2)) |> u"µm")
 
 # plot data
 begin
@@ -69,9 +72,9 @@ xlims, ylims = xlim(), ylim()
 plot(ci2.x, w(ci2.x, nom.(popt2)), label=L"\mathrm{fit}")
 fill_between(ci2.x, ci2.c0, ci2.c1, alpha=0.3, label=L"2 \sigma\ \mathrm{confidence\ band}")
 
-ax.text(0.29, 0.83, L"w(z) = w_0 \sqrt{1 + \left( \frac{(z - z_0) \lambda}{\pi w_0^2}  \right)^2}", fontsize=14, transform=ax.transAxes)
-ax.text(0.29, 0.71, L"w_0 = 82(3)\ \mu\mathrm{m}", fontsize=14, transform=ax.transAxes)
-ax.text(0.29, 0.63, L"z_0 = 7.51(15)\ \mathrm{cm}", fontsize=14, transform=ax.transAxes)
+ax.text(0.29, 0.83, L"w(z) = w_1 \sqrt{1 + \left( \frac{(z - z_1) \lambda}{\pi w_1^2}  \right)^2}", fontsize=14, transform=ax.transAxes)
+ax.text(0.29, 0.71, L"w_1 = 82(3)\ \mu\mathrm{m}", fontsize=14, transform=ax.transAxes)
+ax.text(0.29, 0.63, L"z_1 = 7.51(15)\ \mathrm{cm}", fontsize=14, transform=ax.transAxes)
 rect = mpl.patches.FancyBboxPatch((0.29, 0.62), 0.42, 0.32, linewidth=1.5, edgecolor="C1", facecolor="none", transform=ax.transAxes, boxstyle=mpl.patches.BoxStyle("Round", pad=0.02))
 ax.add_patch(rect)
 
@@ -227,6 +230,10 @@ f = idx_to_f(x)
 popt1, ci1 = bootstrap(fourlorentzian, f[1:2500], arr[1:2500], p0=[1., idx_to_f(maxima[1]), 0.006, 1., idx_to_f(maxima[2]), 0.006, 1., idx_to_f(maxima[3]), 0.006, 1., idx_to_f(maxima[4]), 0.006, 0.], redraw=false, unc=true, xlim=0)
 popt2, ci2 = bootstrap(fourlorentzian, f[2501:end], arr[2501:end], p0=[1., idx_to_f(maxima[5]), 0.006, 1., idx_to_f(maxima[6]), 0.006, 1., idx_to_f(maxima[7]), 0.006, 1., idx_to_f(maxima[8]), 0.006, 0.], redraw=false, unc=true, xlim=0)
 
+println("Δν1 = $(popt1[5] - popt1[2]), Δν2 = $(popt1[8] - popt1[5]), Δν3 = $(popt1[11] - popt1[8])")
+println("Δν1 = $(popt2[5] - popt2[2]), Δν2 = $(popt2[8] - popt2[5]), Δν3 = $(popt2[11] - popt2[8])")
+println("Δνmean = $(mean([popt1[5] - popt1[2], popt1[8] - popt1[5], popt1[11] - popt1[8], popt2[5] - popt2[2], popt2[8] - popt2[5], popt2[11] - popt2[8]]))")
+
 ax = subplots(figsize=(7, 3.5))[1]
 
 scatter(f[1:2500], arr[1:2500], s=10, label=L"\mathrm{data}")
@@ -249,3 +256,7 @@ legend(loc=(0.29, 0.5))
 tight_layout()
 # savefig(string(@__DIR__, "/bilder/multilorentzian2.pdf"), bbox_inches="tight")
 end
+
+plot(df.t, df.CH2)
+3*acos(1 - measurement(163.53,01)/150)/pi
+
