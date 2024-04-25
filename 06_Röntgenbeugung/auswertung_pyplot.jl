@@ -17,28 +17,44 @@ theta_to_d(theta) = @. 2*d*sin(theta*π/180)
 # load data
 begin
 df = CSV.read(string(@__DIR__, "/data/Ex1.csv"), DataFrame, header=["V", "N1", "N2", "N3"], skipto=2)
-# df.N1 = measurement.(df.N1, sqrt.(df.N1))
-# df.N2 = measurement.(df.N2, sqrt.(df.N2))
-# df.N3 = measurement.(df.N3, sqrt.(df.N3))
 df.N = measurement.(mean([df.N1, df.N2, df.N3]), sqrt.(mean([df.N1, df.N2, df.N3])))
 end
 
 # calculate weighted mean of plateau region
-start = 16
+start = 9
 
 mean_N = mean(df.N[start:end])
+
+model(x, p) = @. p[1]*exp(-p[2]*(x - p[3])) + p[4]
+
+popt, ci = bootstrap(model, df.V[start:end], nom.(df.N[start:end]), yerr=err.(df.N[start:end]), p0=[1., 1., 30., 10.], redraw=false, unc=true)
 
 # plot data
 begin
 ax = subplots(figsize=(7, 4.5))[1]
-myerrorbar(df.V, df.N, fmt="o", ecolor="k", label="Messwerte", ms=4)   
-# scatter(df.V[start:end], df.N[start:end], color="black", s=30, zorder=10)
+ax.errorbar(df.V, nom.(df.N), err.(df.N), fmt="o", ecolor="k", label="Messwerte", ms=4)   
+scatter(df.V[start:end], df.N[start:end], color="black", s=30, zorder=10)
 
-plot(df.V[start:end], mean_N * ones(length(df.V[start:end])), label="Mittelwert", c="C1")
+ax.plot(df.V[start:end], nom.(mean_N) .* ones(length(df.V[start:end])), label="Mittelwert", c="C1")
+ax.plot(ci.x, model(ci.x, nom.(popt)), label="Mittelwert", c="C1")
 
 text(0.65, 0.8, L"$\overline{N} = 1017(10)\ (\mathrm{1/s})$", transform=ax.transAxes, fontsize=14)
 rect = mpl.patches.FancyBboxPatch((0.65, 0.78), 0.28, 0.09, linewidth=1.5, edgecolor="C1", facecolor="none", transform=ax.transAxes, boxstyle=mpl.patches.BoxStyle("Round", pad=0.02))
 ax.add_patch(rect)
+
+axins = ax.inset_axes([0.3, 0.1, 0.3, 0.3])
+
+axins.errorbar(df.V, nom.(df.N), err.(df.N), fmt="o", ecolor="k", label="Messwerte", ms=4)  
+
+# change fontsize for axins
+for item in (axins.get_xticklabels() + axins.get_yticklabels())
+    item.set_fontsize(12)
+end
+
+axins.set_xlim(312, 330)
+axins.set_ylim(900, 1500)
+
+ax.indicate_inset_zoom(axins, edgecolor="gray", alpha=1, zorder=0)
 
 xlabel(L"U\ (\mathrm{V})")
 ylabel(L"N\ (\mathrm{1/s})")
@@ -50,6 +66,7 @@ end
 
 # load data
 begin
+ax = subplots(1, 2, figsize=(8, 4.5))[1]
 Voltages = [15:2.5:30;]
 λ0 = []
 for (i, V) in enumerate(Voltages)
@@ -71,41 +88,50 @@ for (i, V) in enumerate(Voltages)
     λ0 = [λ0; measurement((df.lam[idx-1] + df.lam[idx])/2, (df.lam[idx] - df.lam[idx-1])/2)]
 
     if i == 5
-        myerrorbar(df.lam, df.N, fmt="o", label="Messwerte")
-        scatter(df.lam[1:idx_init], nom.(df.N[1:idx_init]), color="black", s=30, zorder=10)
-        plot(df.lam, nom.(mean_N) * ones(length(df.lam)), label="Mittelwert", color="red")
-        fill_between(df.lam, nom.(mean_N) - 3*err.(mean_N), nom.(mean_N) + 3*err.(mean_N), color="red", alpha=0.3)
+        ax[0].errorbar(df.lam, nom.(df.N), yerr=err.(df.N), fmt="o", label="Messwerte")
+        ax[0].scatter(df.lam[1:idx_init], nom.(df.N[1:idx_init]), color="black", s=30, zorder=10)
+        ax[0].plot(df.lam, nom.(mean_N) * ones(length(df.lam)), label="Mittelwert", color="red")
+        ax[0].fill_between(df.lam, nom.(mean_N) - 3*err.(mean_N), nom.(mean_N) + 3*err.(mean_N), color="red", alpha=0.3)
+
+        ax[0].set_xlabel(L"\lambda\ (\mathrm{pm})")
+        ax[0].set_ylabel(L"N\ (\mathrm{1/s})")
+
+        ax[0].legend()
     end
 end
-end
+
 λ0
-model(x, p) = @. p[1]/x + p[2]
+model(x, p) = @. p[1]/x
 
-popt, ci = bootstrap(model, Voltages, nom.(λ0), yerr=err.(λ0), p0=[1000., 0.1], redraw=false, unc=true, p=0.66)
+popt, ci = bootstrap(model, Voltages, nom.(λ0), yerr=err.(λ0), p0=[1000.], redraw=false, unc=true, p=0.66)
 
-χ = chisq(λ0, model(Voltages, nom.(popt)), sigma=err.(λ0), pcount=2)
+χ = chisq(λ0, model(Voltages, nom.(popt)), sigma=err.(λ0), pcount=1)
 
 h_exp = popt[1]*u"kV*pm"*e/c_0 |> u"J*s"
 
 # plot 
-begin
-ax = subplots()[1]
-myerrorbar(Voltages, λ0, fmt="o", ecolor="k", ms=4, label="Messwerte")
-plot(ci.x, model(ci.x, nom.(popt)), label="Fit", color="C1")
+# begin
+# ax = subplots()[1]
+ax[1].errorbar(Voltages, nom.(λ0), yerr=err.(λ0), fmt="o", ecolor="k", ms=4, label=L"\mathrm{Messwerte}")
+xlim, ylim = ax[1].get_xlim(), ax[1].get_ylim()
+ax[1].plot(ci.x, model(ci.x, nom.(popt)), label=L"\mathrm{Fit}", color="C1")
 # fill_between(ci.x, ci.c0, ci.c1, color="C1", alpha=0.3, label="a")
 
-text(0.5, 0.8, L"$\lambda_0(U) = \frac{h_{\mathrm{exp}}c}{eU}$", transform=ax.transAxes, fontsize=14)
-text(0.5, 0.72, L"$h_{\mathrm{exp}} = 6.66(6) \cdot 10^{-34}\ (\mathrm{Js})$", transform=ax.transAxes, fontsize=14)
-text(0.5, 0.64, L"$\chi_{\nu} \approx 0.2$", transform=ax.transAxes, fontsize=14)
-rect = mpl.patches.FancyBboxPatch((0.5, 0.62), 0.4, 0.27, linewidth=1.5, edgecolor="C1", facecolor="none", transform=ax.transAxes, boxstyle=mpl.patches.BoxStyle("Round", pad=0.02))
-ax.add_patch(rect)
+ax[1].text(0.2, 0.9, L"$\lambda_{\mathrm{min}}(U) = \frac{h_{\mathrm{exp}}c}{eU}$", transform=ax[1].transAxes, fontsize=14)
+ax[1].text(0.2, 0.82, L"$h_{\mathrm{exp}} = 6.626(15) \cdot 10^{-34}\ (\mathrm{Js})$", transform=ax[1].transAxes, fontsize=14)
+ax[1].text(0.2, 0.74, L"$\chi_{\nu} \approx 0.2$", transform=ax[1].transAxes, fontsize=14)
+# rect = mpl.patches.FancyBboxPatch((0.5, 0.62), 0.4, 0.27, linewidth=1.5, edgecolor="C1", facecolor="none", transform=ax[1].transAxes, boxstyle=mpl.patches.BoxStyle("Round", pad=0.02))
+# ax[1].add_patch(rect)
 
-xlabel(L"U\ (\mathrm{kV})")
-ylabel(L"\lambda_0\ (\mathrm{pm})")
+ax[1].set_xlim(xlim)
+ax[1].set_ylim(ylim)
 
-legend()
+ax[1].set_xlabel(L"U\ (\mathrm{kV})")
+ax[1].set_ylabel(L"\lambda_{\mathrm{min}}\ (\mathrm{pm})")
+
+legend(loc="lower left")
 tight_layout()
-# savefig(string(@__DIR__, "/bilder/Ex3.pdf"), bbox_inches="tight")
+savefig(string(@__DIR__, "/bilder/Ex3.pdf"), bbox_inches="tight")
 end
 
 h_exp = λ*u"pm"*e*U / (c_0)
