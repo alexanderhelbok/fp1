@@ -240,12 +240,15 @@ function bootstrap(fobj, xdata, ydata; xerr=zeros(length(xdata)), yerr=zeros(len
     sum = zeros(length(p0))
     sigma = 0
     # initialize DataFrame for confidence band
-    if 0 <= xlim < 2 && xlimconst == false 
-        span = maximum(xdata) - minimum(xdata)
-        ci = DataFrame(x=range(minimum(xdata) - span*xlim, maximum(xdata) + span*xlim, length=1000), c0=Vector(undef, 1000), c1=Vector(undef, 1000), mean=Vector(undef, 1000))
-    elseif xlimconst == true
-        ci = DataFrame(x=range(minimum(xdata) - xlim, maximum(xdata) + xlim, length=1000), c0=Vector(undef, 1000), c1=Vector(undef, 1000), mean=Vector(undef, 1000))
+    if typeof(xlim) == Float64
+        if 0 <= xlim < 2 && xlimconst == false
+            span = maximum(xdata) - minimum(xdata)
+            ci = DataFrame(x=range(minimum(xdata) - span*xlim, maximum(xdata) + span*xlim, length=1000), c0=Vector(undef, 1000), c1=Vector(undef, 1000), mean=Vector(undef, 1000))
+        elseif xlimconst == true
+            ci = DataFrame(x=range(minimum(xdata) - xlim, maximum(xdata) + xlim, length=1000), c0=Vector(undef, 1000), c1=Vector(undef, 1000), mean=Vector(undef, 1000))
+        end
     else
+        println(xlim, typeof(xlim))
         ci = DataFrame(x=range(xlim[1], xlim[2], length=1000), c0=Vector(undef, 1000), c1=Vector(undef, 1000), mean=Vector(undef, 1000))
     end
     for i in 1:its
@@ -257,7 +260,11 @@ function bootstrap(fobj, xdata, ydata; xerr=zeros(length(xdata)), yerr=zeros(len
         newx, newy = rand.(Normal.(xdata[ind], xerr[ind])), rand.(Normal.(ydata[ind], yerr[ind]))
         fit = curve_fit(fobj, newx, newy, p0)
         popt = fit.param
-        sigma = stderror(fit)
+        try
+            sigma = stderror(fit)
+        catch
+            sigma = 0
+        end
         arr2[:, i] = fobj(ci.x, popt)
 
         sum += popt

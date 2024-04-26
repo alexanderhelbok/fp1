@@ -21,8 +21,8 @@ df.N = measurement.(df.N, sqrt.(df.N))
 df.lam = theta_to_d(df.ang) 
 backdf.N = measurement.(backdf.N, sqrt.(backdf.N))
 
-# df.N .-= append!(backdf.N, zeros(length(df.N) - length(backdf.N)))
-new = df.N .- append!(backdf.N, zeros(length(df.N) - length(backdf.N)))
+df.N .-= append!(backdf.N, zeros(length(df.N) - length(backdf.N)))
+# new = df.N .- append!(backdf.N, zeros(length(df.N) - length(backdf.N)))
 end
 
 kwargs = (yminorticksvisible = true,
@@ -57,15 +57,12 @@ kwargs = (yminorticksvisible = true,
 
 function inver(x)
     return asind(x/(2*d))
-    # return x/(2*d*(π/180) * 1e12)
 end
 function scali(x)
     return theta_to_d(x)
-    # return @. 2*d*(x*π/180) * 1e12
 end
 function Makie.inverse_transform(::typeof(scali))
-    return x -> asind(x/(2*d))
-    # return x -> x/(2*d*(π/180) * 1e12)
+    return x -> inver(x)
 end
 Makie.defaultlimits(::typeof(scali)) = (-Inf, Inf)
 Makie.defined_interval(::typeof(scali)) = Makie.OpenInterval(-Inf, Inf)
@@ -80,11 +77,11 @@ ax2 = Axis(fig[1, 1]; kwargs..., yticklabelsvisible = false, yticksvisible = fal
 ax.aspect = 7/4.5
 ax2.aspect = 7/4.5
 
-errorbars!(ax, df.lam, nom.(df.N), err.(df.N), label="Messwerte")
-scatter!(ax2, df.ang, nom.(df.N), color="black", markersize=4)
+lines!(ax2, df.ang, nom.(df.N), colormap=:tab10, label="fit")
+scatter!(ax, df.lam, nom.(df.N), color="white", markersize=7, strokewidth=2, strokecolor=:black)
+errorbars!(ax, df.lam, nom.(df.N), err.(df.N), label="Messwerte", whiskerwidth = 6, color=:black)
 # scatter!(ax, [1:1:80;], [1:1:80;], color="black", s=30, zorder=10)
-lines!(ax, df.lam, nom.(df.N), colormap=:tab10, label="fit")
-lines!(ax, df.lam, nom.(new), colormap=:tab10, label="fit")
+# lines!(ax, df.lam, nom.(new), colormap=:tab10, label="fit")
 # fill_between!(ax, df.lam, nom.(df.N) - err.(df.N), nom.(df.N) + err.(df.N))
 
 ax2.xscale = scali
@@ -100,7 +97,7 @@ ylims!(ax, ax2.yaxis.attributes.limits[])
 
 fig
 end
-
+fig
 
 # load data
 begin
