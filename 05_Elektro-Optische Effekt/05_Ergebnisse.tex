@@ -1,70 +1,66 @@
 % !TeX root = Bericht.tex
 % !TeX spellcheck = en_US
 \section{Results}
-We start by analyzing the lasers beam parameters by recording the beams radius $w$ at different distances $z$. The latter was measured using a millimeter-scale ruler with chosen uncertainty of $1 \unit{mm}$. Due to some fluctuations in the waistmeter's reading, we chose the uncertainty to be $3 \unit{\micro\m}$, which could be reduced by taking multiple readings and averaging. 11 datapoints were taken in steps of $1.5 \unit{cm}$ and can be seen in \autoref{fig:w1}. Additionally, a function following \autoref{eqn:wz} was fitted and can be seen as solid orange line, accompanied by a $1\sigma$ confidence band. 
+In order to determine the half-wave-voltage, the intensity was measured by the photodiode, with an inserted triangle voltage with amplitude \SI{3}{V} and a frequency of \SI{30}{Hz}. For the evaluation, the range from minimum to maximum voltage was taken. This interval of voltage is plotted against the intensity. A fit based on \autoref{transmittance} is done, as the intensity is proportional to the transmittance. There were several measurements made to gather statistics, in \autoref{voltage_intensity_pi}, one example of a fit is shown. From this measurement, we get $V_{\pi,FG} = 2.24(1) \unit{V}$ for the measurements including the $\lambda/2$-waveplate. The voltage given here refers to the voltage that has to be inserted at the function generator. At the EOM, the voltage is actually 100 times bigger, as an amplifier is used. The uncertainty of the amplifier is neglected here, as it is estimated to be very small in contrast to the determined value of the voltage. As an average value (without $\lambda/2$-waveplate) we get 
+$$V_{\mathrm{\pi, mean}}=\SI{451.9(5)}{V}.$$ 
+This value is already multiplied by 100, as the amplifier outputs the monitor signal at a reduced level. The uncertainty here is calculated as the standard deviation of the values for $V_{\pi}$.  Using this value and \autoref{volt_pi_relation}, the material based factor $r_{13}n_O^3$ can be determined as 
+$$r_{13}n_O^3=\SI{103(6)}{pm/V}.$$
+When we use the value of $n_O$ from the script, which is given as 2.2865, we get $$r_{13}=\SI{8.9(5)}{pm/V}. $$
+
+\begin{figure}[h].
+	\centering
+	\includegraphics[width=0.8\textwidth]{voltage_intensity_pi}
+	\caption{The measured voltage of the photodiode is shown, depending on the input voltage $U$. A fit was done to determine the half wave voltage, the function and parameters are given in the plot.In this plot, only one of several measurements is shown as an example for a measurement including the $\lambda/2$-waveplate, in the later analysis, the results from many measurements are averaged.}
+	\label{voltage_intensity_pi}
+\end{figure}
+
+When averaging over all of these measurements with the $\lambda/2$-waveplate , we get
+$$V_{\mathrm{\pi, mean, waveplate}}=\SI{223.6(3)}{V}.$$
+Which yields to
+$$r_{33}n_e^3=\SI{208(12)}{pm/V}$$
+and width the value for $n_e$ , given in the script as 2.2022 \autocite{eom}, we get a value of $$r_{33}=\SI{19.4(1.1)}{pm/V}.$$
+
+
+
+
+%The voltage given here refers to the voltage that has to be inserted at the function generator. At the EOM, the voltage is actually 100 times bigger, as an amplifier is used. 
+%When analysing the measurements without the $\lambda/2$-waveplate, we get a mean value of 
+%$$V_{\mathrm{\pi, mean, no waveplate}}=\SI{1.236(3)}{V}.$$
+%Using this value and \autoref{volt_pi_relation}, the material based factor $r_{33}n_e^3$ can be determined as $$r_{33}n_e^3=\SI{208(12)}{pm/V}. $$
+%The absolute value for $n_e$ is given in the script as 2.2022 \cite{eom}, so we get a value of $$r_{33}=\SI{19.4(1.1)}{pm/V}.$$
+
+
+In the next step, the bandwidth of the first setup was determined qualitatively. The bandwidth is defined as the frequency, at which the interference contrast decreases clearly, compared to the contrast at low frequency. In our case, we use the frequency, at which the contrast is half the contrast at the lowest measured frequency, which was \SI{30}{Hz}. At \SI{30}{Hz}, the contrast is 0.87(2), so we are looking for the frequency with a contrast of 0.434(8). To estimate this quantity, a exponential function is fitted to the data points, which are the contrast at different frequencies. The reason for the choice of an exponential is, that it describes the behaviour in the relevant measured range well. The data as well as the fit function with parameters are shown in \autoref{contrast_frequency_bandwith_plot}. Using the aforementioned definition of bandwidth and the fit parameters, we are getting a bandwith of \SI{425(10)}{Hz}. 
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\textwidth]{w1}
-	\caption{The measured beam radius $w$ of freely propagating laser light is plotted against the distance $z$. A function was fitted and can be seen as orange line and is surrounded by a $1\sigma$ confidence band. The fitfunction and according parameters can be seen in the bottom right. Errorbars denote $1\sigma$ uncertainties with the errors in x-direction being too small to make out.}
-	\label{fig:w1}
+	\includegraphics[width=0.7\textwidth]{contrast_frequency_plot}
+	\caption{The measured interference contrast is shown dependent on the input frequency $f$. Additionally, an exponential fit is shown, parameters and function are shown in the graph. }
+	\label{contrast_frequency_bandwith_plot}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\linewidth]{BildSwitch}
+	\caption{The EOM's behaviour as an optical switch can be seen. The average on voltage and off voltage are also shown. To determine these, the rising and falling edges were first determined. Then the system was given a settling time of 0.0003 s. The mean value up to the next edge was then determined. In each case, the standard deviation serves as uncertainty. This is visualized with a $1\sigma$ confidence band.}
+	\label{fig:Switch}
 \end{figure}
 
-In \autoref{fig:w1}, we can see that the data nicely follows theory (all datapoints are within $1\sigma$ of the fitted curve). We can extract a beam waist $w_0 = 224(4) \unit{\micro\m}$ at a focus position of $z_0 = -18.45(17) \unit{mm}$, which approximately lies at the end of the laser housing.
 
-Before using the determined beam waist to match it to a cavity, we analyzed the effect of a lens with focal length $f = 100 \unit{mm}$ on the beam radius. Again, data was taken in intervals of $1.5 \unit{cm}$ with the same uncertainties as described above. The data with an appropriate fit can be seen in \autoref{fig:w2}. Here a $2\sigma$ confidence band was chosen, to help gauge the deviation of the datapoints from the fit line around the focus point.
+
+
+For the second set-up, we implemented an optical switch at the same frequency as before, but with a square-wave signal. However, it is first necessary to determine the value of $V_{\pi,2}$. This is done according to the same procedure as for the data from the first setup. The value of 
+$$V_{\pi,2}=\SI{152.16(7)}{V}$$
+was determined. Thereafter, the offset voltage and the amplitude of the square wave signal were manually adjusted until the maximum on/off ratio was achieved. This can be seen in  \autoref{fig:Switch}. We repeated the measurement once and determined an on/off-ratio of $V_\mathrm{ON}/V_\mathrm{OFF}=17(4) $ and $V_\mathrm{ON}/V_\mathrm{OFF}=18(5)$. To determine the $V_\mathrm{ON}$ and $V_\mathrm{Off}$, we first searched for the Flank and then calculated the mean value up to the next Flank after a transient phase of 0.0003 s. We used the standard deviation as the uncertainty. The value for the transient phase was not chosen at random; it was approximately 2 times the half-life for the reaction of the system. We will discuss this further later.
+
+
+To get an idea of the response time of the system, a falling edge was observed for a square wave signal. With the original setup we obtained a half-life of $1.3\cdot 10^{-4} \unit{s}$. To bridge the internal resistance of the oscilloscope, a $50\:\unit{\ohm}$ resistor was connected in parallel. Although the measured signal is much smaller than in the original setup, a half-life of $1.9\cdot 10^{-6} \unit {s}$ can be obtained. As these are qualitative and not quantitative values, no error calculation was made. For better comparison in the graph, the amplitudes have been normalised to $\pm 1$. The final slope analyses can be seen in \autoref{fig:Flankenverhalten}. It can be seen that the half-lives differ by 2 decimal points.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\textwidth]{w2}
-	\caption{The measured beam radius $w$ of laser light after a lens with $f = 100 \unit{mm}$ is plotted against the distance $z$. A function was fitted and can be seen as orange line and is surrounded by a $2\sigma$ confidence band. The fitfunction and according parameters can be seen in the bottom right. Errorbars denote $1\sigma$ uncertainties with the errors in x-direction being too small to make out.}
-	\label{fig:w2}
+	\includegraphics[width=\linewidth]{BildReaktionszeit}
+	\caption{The response behaviour of the system can be seen. In the left picture the setup was made as befor and in the right picture a $50 \unit{\ohm}$ resistor was connected parallel to the oscilloscope to minimise the input resistance. The signals have been normalised to their maximum at $\pm 1$. The signal from the frequency generator, the recorded signal from the laser diode and the half-life can be seen.}
+	\label{fig:Flankenverhalten}
 \end{figure}
-
-The data in \autoref{fig:w2} mostly follows the expected behavior, with outliers around the focus point $z_1 = 7.51(15) \unit{cm}$. This could have been caused by the waistmeter being slightly tilted against the laser's propagation axis, leading to higher radius measurements. After adding the distance between the closest radius measurement and the lens, which was estimated to be $2.5(2) \unit{cm}$, $f_{\mathrm{exp}} = 100(2) \unit{mm}$ is in good agreeance with $f_{\mathrm{lens}} = 100 \unit{mm}$. As for the waist, using the matrix formalism described in \autoref{subsec:matrix} we can get a theoretical prediction for the beam waist after a lens. Comparing the exact theoretical result with the experimental value
-$$ w_{1, \mathrm{theo}} = 83.3(1.1) \unit{\micro\m} \qquad w_{1,\mathrm{exp}} = 82(3) \unit{\micro\m}, $$ 
-we conclude that our experiment is consistent with theory. The approximating $w_1 = f\lambda/\pi w_0$ yields a value of $89.7(1.6) \unit{\micro\m}$, which deviates significantly from both, experimental and exact theoretical result. It is therefore not appropriate to use this approximation on a lens with focal length $f = 100 \unit{mm}$. 
-
-After matching the lasers beam waist to that of the cavity (for a detailed procedure see \autoref{subsec:mode}), we can validate the confocal condition (mirror curvature $r$ equal mirror distance $L$) by measuring the distance to half axial modes. For this the transmitted laser signal was recorded on the oscilloscope and normalized using the highest datapoint (normalization was done for convenience). Then we isolate the peaks intended for studying and we fit a multilorentzian function (sum of multiple Lorentz functions with independent parameters) to the data. By calculating the free spectral range of the cavity $\nu_{\mathrm{FSR}} = c/2L = 1 \unit{GHz}$ and the fitted distance between peaks of the same height, we can convert the time domain measurement from the oscilloscope to frequencies. The fit also lets us compute the distance between \blockquote{regular} and half axial modes. All this can be seen in \autoref{fig:multilorentzian}.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=\textwidth]{multilorentzian}
-	\caption{The recorded signal amplitude $V$ is plotted against the frequency $\nu$. A fit function consisting of three independent Lorentz functions was fitted and can be seen as solid line. The distance between the two $\mathrm{TEM}_{00}$ peaks was used to calibrate the x-Axis, while the distance to the half axial peak, seen in the middle was determined from fit parameters.}
-	\label{fig:multilorentzian}
-\end{figure}
-
-As can be seen in \autoref{fig:multilorentzian}, the confocal condition is almost met, with distances of $0.49 \unit{GHz}$ and $0.51 \unit{GHz}$. Statistical errors are omitted, since the fit returned values in the range of $\oldunit{kHz}$, at which systematical errors probably play a critical role. 
-
-Having confirmed the cavity to be confocal, we can optimize the mirrors to maximize the mode's intensity (by reducing the half axial mode's intensity). We then repeat the same procedure seen in \autoref{fig:multilorentzian}, with the only difference being that we recorded and fitted four Lorentz functions. We can evaluate the finesse $\mathcal{F}$ for each Lorentz peak using \autoref{eqn:finesse} and the fitted full width at half minimum (FWHM). Assuming a mirror reflectivity of $R = 98\%$ and mirror transmission being the only losses, we can compute a theoretical upper limit for the finesse. Below are the theoretical limit and a mean of experimentally determined finesse values:
-$$ \mathcal{F}_{\text{theo}} = 155.50  \qquad \mathcal{F}_{\text{exp}} = 75.91(15) $$
-It is apparent, that other loss mechanisms are at play in the system.
-
-So far, we have only studied TEM$_{00}$ and TEM$_{01}$ modes. We can go to higher modes by increasing the cavity's length by $13.53(1) \unit{mm}$ and exiting the confocal condition. We study higher modes qualitatively, by taking pictures with a CCD camera. The pictures are plotted in \autoref{fig:gaussmodes}. Additionally, we converted the images to grayscale and used it as proxy for the beam's intensity. This allows us, to project the image onto the horizontal and vertical axis by summing over the images rows and columns. We can fit Hermite-Gaussian functions of the appropriate order to the projections. Both data (black) and fit (red) are plotted on the marginal axes in \autoref{fig:gaussmodes}.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=\textwidth]{gaussmodes}
-	\caption{Four images of different TEM modes are depicted on a per-pixel basis. All of them are accompanied by marginal axes, onto which the intensity is projected and shown as black datapoints. The red lines represent fitted Hermite-Gaussian polynomials.}
-	\label{fig:gaussmodes}
-\end{figure}
-
-Looking at \autoref{fig:gaussmodes}, we can clearly identify TEM$_{00}$, TEM$_{10}$ and TEM$_{01}$ modes, with projected intensities matching the fitted Hermite-Gaussian function. The TEM$_{02}$ mode (or possibly higher) is vertically not completely captured by the CCD camera, which makes fitting to difficult. In the top two pictures we saturate the CCD's recordable brightness. This can be directly observed in the optical picture as color discontinuity towards the center of the laser beam, further supported by a plateauing off toward the maximal intensity in all marginal projections. 
-
-Lastly, we recorded a spectrum of higher order modes to compare the distance between modes with \autoref{eqn:cos}. Again, the data with calibrated x-Axis and fitted lorentzians can be seen in \autoref{fig:multilorentzian2}. 
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=\textwidth]{multilorentzian2}
-	\caption{The recorded signal amplitude $V$ is plotted against the frequency $\nu$. The data was split in equal halves, to which functions consisting of four independent Lorentz functions were fitted and can be seen as solid orange lines. The distance between the third peaks from the left was used to calibrate the x-Axis, while the distance to the half axial peak, seen in the middle was determined from fit parameters.}
-	\label{fig:multilorentzian2}
-\end{figure}
-
-From the fits, we get a mean mode spacing of $\Delta\nu = 88.03(8) \unit{MHz}$. From the theory side, replacing the mirror spacing $L = 150 \unit{mm}$ in confocal setup with the new length of $L = 163.53(1) \unit{mm}$, $\arccos(1 - L/r)/\pi$ increases from exactly $0.5$ to $0.529(2)$. This leads to a shift in frequency for higher modes ($m,n > 0$) with increasing $q$, as can be seen in \autoref{fig:spektrum_cavities}. However, the predicted fundamental mode spacing of $29(2) \unit{MHz}$ is too small to explain the data. Only moving to modes with $m+n = 2$ (this effectively rescales the output of the $\arccos$), the predicted mode spacing becomes $86(6) \unit{MHz}$. Whilst in good agreeance with experimental results, it requires dominant TEM$_{mn}$ modes with $m+n = 2$. Although possible, it is quite unlikely that we do not simultaneously excite higher or lower modes. It is also possible, that we did not observe a full FSR of the cavity with the recorded data still representing substructures, rendering our x-Axis calibration false. 
-
-
-
-
 
 
 

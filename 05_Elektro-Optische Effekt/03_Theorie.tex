@@ -2,94 +2,121 @@
 % !TeX spellcheck = en_US
 \section{Theory}
 \label{sec:theorie}
-
-In this section, the basic theoretical principles are briefly outlined to provide a better understanding of what a Gaussian beam is and how a cavity works.
-
-\subsection{Gaussian beam}
-The Gaussian modes are a set of solutions to the Helmholtz equation, which can be derived from Maxwell's equations using the paraxial approximation (see \autocite{gaussian_beam_script}). Their intensity is given by 
-$$ I(x,y,z) \sim |U(x,y,z)|^2=I_0\left(\frac{w_0}{w(z)}\right)^2 \cdot \exp\left(-2\frac{x^2+y^2}{w(z)^2}\right)$$
-, where $w_0$ is the beam radius when in focus (also known as the beam waist), $w(z)$ is the radius of the beam at a given location $z$, $I_0$ is the original intensity of the laser and $y$ is the spacial expansion. The beam width is given by
-\begin{equation}\label{eqn:wz}
-	w(z)=w_0\sqrt{1+\left(\frac{z}{z_R}\right)^2}\ .
+This section describes all relevant formulas needed to understand the experiment. The theory refers to the script \cite{eom}. 
+\subsection{Pockels- and Kerr-effect}
+An electro-magnetic wave, which passes non-magnetic, dielectric material, causes charges to oscillate. This behaviour changes optical properties like the refractive index $n$. The exact behaviour is complicated, but since the $n$ changes little with respect to $E$, we can expand it into a Taylor series of the form
+\begin{equation}
+	n(E)=n_0 - \frac{1}{2}rn_0^3E - \frac{1}{2}sn_0^3E^2 + \dots.
 \end{equation}
-Here $z_R = \pi\cdot w_0/\lambda$ is called the Rayleigh length, which is given by the distance at which the intensity decreases by the factor $1/e^2$, at this point the beam width increases by $\sqrt{2}$. Via geometrical analysis, expressions for the curvature of the beam $R(z)$ and the divergence angle $\theta$ can be found (see \autocite{gaussian_beam_script}).
-
-The Rayleigh length divides the beam into two regimes, a near field, where the beam can be regarded as a plane wave (curvature $R=\infty$) and far field, where the beam can be regarded as a cubic wave ($R(z)\sim z$). 
-
-\subsection{Matrix formalism}\label{subsec:matrix}
-In order to describe the effect of optical elements on a Gaussian beam, the ABCD matrix formalism can be used. Therefore, we define a complex quantity $q(z)$, such that
-$$\frac{1}{q(z)} = \frac{1}{R(z)}- i\frac{\lambda}{\pi w(z)^2}.$$
-When passing an optical element, the complex quantity changes according to
-$$\frac{1}{q_2}=\frac{C+D/q_1}{A+B/q_1}.$$
-The parameters $A,B,C,D$ are entries of a $2 \times 2$ matrix. The form of the matrices for free propagation, lenses and mirrors are given in \autoref{fig:matrix_optics_table}. Combination of optical elements is done via matrix multiplication, where the multiplication order corresponds to the order of propagation.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55 \textwidth]{Bild_2024-04-11_005434519}
-	\caption{Matrix entries for lenses, mirrors and free propagation in space. Table taken from \autocite{gaussian_beam_script}.}
-	\label{fig:matrix_optics_table}
-\end{figure}
-
-Using this formalism, we can calculate the beam waist $w_2$ of an incident collimated beam with waist $w_1$ and curvature $R = \infty$ at a distance $z = f$ after passing through a lens with focal length $f$. The result
-
-\begin{equation}\label{eqn:w2}
-	 w_2 = \sqrt{\frac{f^2w_1^2\lambda^2}{\pi^2w_1^4 + f^2\lambda^2}} \approx \frac{f\lambda}{\pi w_1}
+Here, $a_1 = -rn_0^3/2$ and $a_2 = -sn_0^3$ are the series coefficients obtained via first and second order derivatives and $n_0$ represents the refractive index without external fields. Expressing the coefficients $a_1$ and $a_2$ in this way allows the electric impermeability $\eta = \epsilon_0/\epsilon = 1/n^2$ to adopt the simple form
+\begin{equation}\label{eqn:eta}
+	\eta(E) = \eta_0 + rE + sE^2 + \dots.
 \end{equation}
-can be further simplified, assuming $f^2\lambda^2$ to be negligibly small.
+Usually, the second order term is already tiny and can be neglected. Refractive index and impermeability then follow a linear trend with increasing $E$. This effect is called the Pockels-effect with the corresponding Pockels coefficient $r$. 
 
-\subsection{Optical Resonator}
-\label{subsec:OptRes}
-In an optical resonator, two mirrors are set up parallel to each other at a certain distance $L$. Due to the fact that the electric field has a node at each mirror, only waves with a wavelength $\lambda$ that is an integer inverse of the half distance between those mirrors can exist as standing waves. So we get the general relation
-$$\lambda_n=\frac{2 L}{n}, $$ 
-where $n$ is an integer. Changing wavelength to frequency $\nu$ and introducing the free spectral range (FSR) as $\Delta \nu_{\mathrm{FSR}}= c/2L$ the relation can be simplified to $\nu=n\Delta \nu_{\mathrm{FSR}}$ (see~\autocite{diodenlaser}).
-If the mirrors are semi-transparent, monochromatic light can be transmitted. Depending on the reflectivity, other frequencies can also pass through the mirror and the peaks smooth out \autocite{Fabry-Perot_Interferometer_Tutorial}. 
-%This behavior is shown in \autoref{fig:Reflexivität}. 
+For materials with inversion symmetry, the first order term in the expansion has to equal zero since the polarity of $E$ does not matter. Thus, the the second order term has to be considered where refractive index is proportional to the square of the electric field. This effect, typically much lower than Pockels-effect, is called Kerr-effect. 
+
+\subsection{Anisotropic materials}
+When studying the Pockels-effect, anisotropic materials have to be used. However this means, that material properties like $n$, $\epsilon$ and $\eta$ are no longer independent of the orientation of the material. They have to be extended to $3\times3$ matrices, in a basis of our choice. We choose a basis in which $\epsilon$ is diagonal, with eigenvalues $\epsilon_i$. This basis defines three directions, also known as optical axes, in which the polarization of propagating light does not change. The axes have distinct refractive indices $n_i^2 = \epsilon_i/\epsilon_0$. Any incident light can be decomposed onto the optical axes.
+
+Before studying the properties of anisotropic materials, we have to generalise \autoref{eqn:eta} to comply with the extension to matrices. The new relation
+\begin{equation}\label{eqn:tensoreta}
+	\eta_{ij}(\vec{E}) = (\eta_0)_{ij} + \sum_k r_{ijk}E_k + \sum_{kl} s_{ijkl}E_kE_l + \dots
+\end{equation}
+contains a vectorial electric field $\vec{E}$ and tensorial generalisations of both Pockels ($r_{ijk}$) and Kerr ($s_{ijkl}$) coefficients. These contain $3^3$ and $3^4$ components respectively, but symmetry arguments reduce the total degrees of freedom. 
+
+Some crystals (uniaxial crystals) have only two distinct refractive indices with $n_1 = n_2 = n_o$, the refractive index of the ordinary axis, and $n_3 = n_e$ the extraordinary refractive index. In the case of an uniaxial crystal of the trigonal 3m group (such as \ch{LiNbO3}), the pockel tensor can be reduced to a $6\times3$ matrix by mapping the first two indices $i, j$ onto one index $I$. The mapping rules are listed in \autoref{table:indices}.
+
+\begin{center}
+	\captionof{table}{The mapping rules from double index $(i, j)$ onto single index $I$ are listed for a pockels coefficient of a uniaxial trigonal 3m crystal. \vspace{0.3cm}}
+	\begin{tabular}{@{\extracolsep{5mm}} 
+			l
+			S[table-format=1]
+			S[table-format=1]
+			S[table-format=1]
+			S[table-format=1]
+			S[table-format=1]
+			S[table-format=1]
+		}
+		\toprule
+		& \multicolumn{6}{c}{\makecell{Index pair $(i, j)$}} \\
+		\cmidrule(lr){2-7}
+		{}
+		&   {$(1, 1)$}
+		&   {$(2, 2)$}
+		&   {$(3, 3)$}
+		&   {$(2, 3)$ or $(3, 2)$}
+		&   {$(1, 3)$ or $(3, 1)$}
+		&   {$(1, 2)$ or $(2, 1)$}\\
+		\midrule
+		Index $I$ & 1 & 2 & 3 & 4 & 5 & 6 \\
+		\bottomrule
+	\end{tabular}
+	\label{table:indices}
+\end{center}\vspace{0.5cm}
+
+After remapping the indices, the pockels coefficient can be displayed as
+
+\begin{equation}\renewcommand\arraystretch{0.8}
+	r_{IK} = \begin{pmatrix}
+		0 & -r_{22} & r_{13} \\
+		0 & r_{22} & r_{13} \\
+		0 & 0 & r_{33} \\
+		0 & r_{51} & 0 \\
+		r_{51} & 0 & 0 \\
+		-r_{22} & 0 & 0
+	\end{pmatrix}.
+\end{equation}
+
+We will now consider an electric field parallel to the extraordinary axis $\vec{E} = (0, 0, E)$. In such a case, the sums in \autoref{eqn:tensoreta} can be omitted and the refractive index (or impermeability for that matter) for the ordinary and extraordinary axis decouple. We are left with the following equations
+\begin{align*}
+	\frac{1}{n_o^2(E)} &= \frac{1}{n_o^2} + r_{13}E \\
+	\frac{1}{n_e^2(E)} &= \frac{1}{n_e^2} + r_{33}E 
+\end{align*}
+, which can be brought into the approximate form
+\begin{align}
+	n_o(E) &\approx n_o + \frac{1}{2}n_o^3r_{13}E \\
+	n_e(E) &\approx n_e + \frac{1}{2}n_e^3r_{33}E.
+\end{align}
+Here $n_o$ and $n_e$ are refractive indices without external field, whilst when considering nonzero $E$ it is explicitly mentioned ($n_o(E)$ and $n_e(E)$). Both indices depend on different elements of the pockel matrix $r_{13}$ and $r_{33}$.
+
+\subsection{Phase and intensity modulation}
+When a light wave transverses medium, its electric field $E_\mathrm{L}$ experiences a phase shift. This phase shift depends on the length of the Pockels crystal, the vacuum wavelength of the laser, the external electric field $E$, the Pockels coefficient $r$ and die refractive index without external field $n_0$. The phase shift $\phi$ is given by
+\begin{equation*}
+	\phi=\frac{2\pi n_0L}{\lambda_0}-\pi\frac{rn_0^3EL}{\lambda_0}. 
+\end{equation*}
+The electric field is created by a applying a voltage $V$ to two parallel metal plates mounted on opposite sides of the crystal acting as a plate capacitor, separated by the crystals width $d$. Using $E=V/d$, we can define the half-wave-voltage, which is the voltage needed to induce a phase shift of $\pi$. The half-wave-voltage then is 
+\begin{equation}
+	V_{\pi}=\frac{d}{L}\frac{\lambda_0}{r n_0^3},  \label{volt_pi_relation}
+\end{equation}
+which simplifies the term for the phase shift to 
+\begin{equation}
+	\phi=\frac{2\pi n_0L}{\lambda_0}-\pi\frac{V}{V_{\pi}}. 
+\end{equation}
+If an EOM is placed in one arm of a Mach-Zehnder interferometer, the phase shift only occurs in one beam. In the output beam, the two waves interfere. When changing the phase difference by varying the voltage, constructive or destructive interference can be achieved. The transmittance $T$ is given by 
+\begin{equation}
+	T(V)=\mathrm{cos}^2\left(\alpha-\frac{\pi}{2}\frac{V}{V_\pi}\right). \label{transmittance}
+\end{equation}
+In this relation, $\alpha$ is a fixed phase. If $\alpha$=0 is reached in an experimental setup, the interferometer functions as an optical switch, by changing the input voltage from 0 to $V_\pi$. This, however, only works if 50/50 beam splitters are used. 
+\subsection{Modulation of a circularly polarised laser beam}
+
+Upon examination of a circularly polarised laser beam that is transmitted through the EOM, it becomes evident that the electric field exhibits a horizontal and vertical component, which follows the ordinary and extraordinary optical axes, respectively. In the case of circular polarisation, the intensity is distributed equally on both axes. In order to predict the $V_\pi$ for this case, it is possible to utilise the $V_{\pi,o}$ and $V_{\pi, e}$. These are the half-wave voltages for the ordinary and extraordinary optical axis. In accordance with the definition of the have wave voltage, the total phase shift must be equal to $\pi$. This implies that  
+$$ \phi = \phi_0-\pi\frac{V}{V_\pi}=\phi_o+\phi_e=\phi_{0,o}-\pi\frac{V}{V_{\pi,o}}+\phi_{0,e}-\pi\frac{V}{V_{\pi,e}}$$
+leading to 
+$$\frac{1}{V_\pi}=\frac{1}{V_{\pi,e}}+\frac{1}{V_{\pi,e}}$$ \label{EQ:VPI}. 
+This conclusion can be reached simply by comparing the coefficients of efficiency.
+
+\subsection{Optical contrast}
+Lastly, we will introduce the optical contrast, which is a measure for how well one can distinguish high from low intensities in a signal. It's formal definition
+\begin{equation}\label{eqn:contrast}
+	\mathrm{contrast} = \frac{I_{\mathrm{max}} - I_{\mathrm{min}}}{I_{\mathrm{max}} + I_{\mathrm{min}}} \cdot 100 \%
+\end{equation}
+is given by the ratio between intensity difference between maximum and minimum intensity $I_{\mathrm{max}} - I_{\mathrm{min}}$ and the summed intensity $I_{\mathrm{max}} + I_{\mathrm{min}}$.
 
 %\begin{figure}[H]
-%	\centering
-%	\includegraphics[clip,trim=0 0 0 2, width=0.9\linewidth]{Bild Reflektivität}
-%	\caption{\glqq Mode spectrum of a Fabry-Pérot interferometer for mirror reflectances of 99.7\%, 80\%, and 4\%, illustrated by a blue, red, and green curve, respectively. 99.7\% reflectance corresponds to the case for the SA200 series, which has a free spectral range of 1.5 GHz. The 4\% reflectance corresponds to a typical "fringing effect" arising from reflections between parallel surfaces on glass plates.\grqq 
-%		From \autocite{Fabry-Perot_Interferometer_Tutorial}.}
-%	\label{fig:Reflexivität}
+%    \centering
+%    \includegraphics[width=\textwidth]{plot3.pdf}
+%    \caption{}
+%    \label{fig:plot3}
 %\end{figure}
-
-To quantify the quality of a cavity, we introduce the finesse $\mathcal{F}$ of a cavity, defined as the ratio between the FSR and full width at half minimum (FWHM) of the transmitted peaks. Assuming all losses coming from mirror transmission, we can theoretically compute the finesse. Both relations are listed below
-\begin{equation}\label{eqn:finesse}
-	\mathcal{F}_{\text{exp}} = \frac{\Delta \nu_{\mathrm{FSR}}}{\text{FWHM}} \qquad \mathcal{F}_{\text{theo}} = \frac{\pi\sqrt{R}}{1 - R},
-\end{equation}
-with $R$ being the mirror reflectivity.
-
-A confocal resonator has a special geometry, where both mirrors are curved with the same radius $r$ as the length $L$ between them ($r = L$). This has some essential benefits, such as the fact that when correctly aligned the stability is very high. Additionally, if the laser beam is misaligned, we only get one peak between the two expected beams (see \autocite{WikiOticalCavit}) . 
-
-A resonator decomposes an incident laser beam into its internal modes. To achieve maximum spatial overlap of laser and resonator mode, the laser mode has to be adjusted using lenses. To calculate the needed beam waist, we use
-\begin{equation}\label{eqn:w0}
-	2z_\mathrm{R} = \frac{2\pi w_0}{\lambda} = \sqrt{L(2r-L)}.
-\end{equation}
-Here, a symmetrical resonator is used with equal mirror curvatures $r$. 
-
-If the laser and cavity modes do not match, apart from the fundamental transverse electro-magnetic mode (the TEM$_{00}$), also higher modes (TEM$_{mn}$ with $m, n > 0$) are excited. These excited states can be constructed by multiplying the ground state with Hermite-polynomials $H_i$, resulting in so called Hermite-Gaussian-beams:
-\begin{equation}
-	U_{\mathrm{(m,n)}} \sim {U_{(0,0)}H_{\mathrm{m}}\left(\frac{\sqrt{2}}{w(z) }x\right) H_{\mathrm{n}}\left(\frac{\sqrt{2}}{w(z)}y\right)}\label{hermite-gaussian-beams}
-\end{equation}
-Each revolution in the cavity gives the modes an additional phase shift, which changes the resonance condition from $\nu = n\Delta \nu_{\mathrm{FSR}}$ to
-\begin{equation}\label{eqn:cos}
-	\nu_{q,m,n} = \left[ (q+1)+\frac{1}{\pi} (m + n + 1)\arccos{\left(1-\frac{L}{r}\right)} \right]\Delta \nu_{\mathrm{FSR}}. 
-\end{equation}
-In case of a confocal resonator ($r = L$) the relation simplifies to
-\begin{equation}
-	\nu_{q,m,n} = \left[ (q+1)+\frac{1}{2}(m+n+1) \right]\Delta \nu_{\mathrm{FSR}}. 
-\end{equation}
-This  leads to half-axial-modes of a confocal resonator, as shown in the spectrum of a near planar, a confocal and a near concentric cavity in \autoref{fig:spektrum_cavities}. 
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[clip,trim=0 0 0 2, width=0.9\linewidth]{Bild_2024-04-11_001906466}
-	\caption{\blockquote{Resonance frequencies of higher order modes in
-			optical resonators for different configurations.
-		}\cite{gaussian_beam_script} Figure taken from \cite{gaussian_beam_script}}
-	\label{fig:spektrum_cavities}
-\end{figure}
-
-
 
