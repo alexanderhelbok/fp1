@@ -1,0 +1,45 @@
+% !TeX program = xelatex
+\documentclass{alex_bericht}
+\usepackage[export]{adjustbox}
+
+\begin{document}
+%Seiten ohne Kopf- und Fußzeile sowie Seitenzahl
+\pagenumbering{Roman}
+\def\settitle{Röntgenstrahlung}
+\input{01_titel}
+
+\section*{Abstract}
+The aim of this report is to characterize Gaussian beams. Firstly, the beam diameter of the laser is recorded at different distances with and without a lens, allowing us to determine the beam waist by comparing with theory. We determine the beam waist to be $W_0 = 224(4) \unit{\micro\m}$. The second part of the experiment includes an optical cavity, allowing us to study higher modes of the laser. We can qualitatively identify TEM$_{01}$, TEM$_{10}$ and TEM$_{02}$ modes using a CCD camera. We also recorded a spectrum of higher order modes and determined the frequency separation. We can explain the measured mode spacing by assuming contributions to the spectrum coming exclusively from TEM$_{mn}$ modes with $m + n = 2$.  
+\vspace{1.5cm}
+
+
+%Inhaltsverzeichnis
+{\hypersetup{linkcolor=black}
+\clearpage
+\tableofcontents
+
+%Verzeichnis aller Bilder
+%\listoffigures
+
+%Verzeichnis aller Tabellen
+%\listoftables}
+\cleardoubleoddpage
+
+\pagenumbering{arabic}
+\input{02_Einleitung}
+
+\input{03_Theorie}
+
+\input{04_Aufbau}
+
+\input{05_Ergebnisse}
+
+\input{06_Diskussion}
+
+%%Literaturverzeichnis
+\printbibliography
+\clearpage
+
+\include{07_Unterschriften}
+
+\end{document}
