@@ -1,0 +1,48 @@
+% !TeX program = xelatex
+\documentclass{alex_bericht}
+\usepackage[export]{adjustbox}
+
+\def\NFe{N_{\text{Fe}}}
+\def\NH{N_{\text{H}}}
+
+\begin{document}
+%Seiten ohne Kopf- und Fußzeile sowie Seitenzahl
+\pagenumbering{Roman}
+\def\settitle{Sun spectroscopy}
+\input{01_titel}
+
+\section*{Abstract}
+This experiment deals with taking an astrophysical spectrum of the sun. Thereby, some corrections of the raw data have to be carried out. A bias subtraction and a flatfield correction are accomplished, in addition to a calibration with ThAr-lamps. After these corrections, Fe I lines of the sun's spectrum are analysed, to determine the curve of growth. Using a fit, the effictive temperature of the sun can be determined as \SI{5521(110)}{K} and the abundance of Iron relative to hydrogen as 0.043(7) \%. 
+\vspace{1.5cm}
+
+
+%Inhaltsverzeichnis
+{\hypersetup{linkcolor=black}
+\clearpage
+\tableofcontents
+
+%Verzeichnis aller Bilder
+%\listoffigures
+
+%Verzeichnis aller Tabellen
+%\listoftables}
+\cleardoubleoddpage
+
+\pagenumbering{arabic}
+\input{02_Einleitung}
+
+\input{03_Theorie}
+%
+\input{04_Aufbau}
+%
+\input{05_Ergebnisse}
+%
+\input{06_Diskussion}
+
+%%Literaturverzeichnis
+\printbibliography
+\clearpage
+
+\include{07_Unterschriften}
+
+\end{document}
