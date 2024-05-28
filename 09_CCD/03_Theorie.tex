@@ -1,0 +1,27 @@
+% !TeX root = Bericht.tex
+% !TeX spellcheck = de_DE
+\section{Theorie}
+In diesem Kapitel wird die nötige Theorie zum Versuch beschrieben. Begonnen wird hierbei mit der Funktionsweise eines CCD-Sensors, danach werden die unterschiedlichen Kalibrierungen einer Aufnahme besprochen. Dieses Kapitel bezieht sich inhaltlich auf das Versuchsskript \cite{ccd}. 
+
+\subsection{Funktionsweise eines CCD-Sensors}
+
+In einem CCD-Sensor besteht jeder Pixel aus einem Halbleitermaterial mit pn-Übergang, also einem Übergang zwischen Regionen positiver und negativer Dotierung. In der Übergangszone können durch den Photoeffekt Elektronen durch das Eintreffen von Photonen aus dem Halbleitermaterial gelöst werden. Diese Elektronen werden bis zum Auslesen in Potentialtöpfen gespeichert. Nach der Aufnahme des Bildes werden die Elektronen durch periodische Spannungspulse in eine Richtung verschoben. Das Auftreffen der Elektronen wird dann detektiert, und das Signal in Analog-Digital-units (ADU) umgewandelt. 
+
+\subsection{Kalibrierung einer Aufnahme}
+In diesem Versuch konzentrieren wir uns auf des Bereinigen von CCD-Aufnahmen durch unterschiedliche Kalibrierungsaufnahmen. Dabei werden Bias-, Flatfield-, und Dunkelstromaufnahmen verwendet. 
+
+Die Bias-Subtraktion beseitigt das Signal, das aufgezeichnet wird, während der Sensor keinem
+keinem Licht ausgesetzt ist. Der Bias ist also ein konstanter Offset, der von der Rohdatei subtrahiert werden muss.
+Der Bias kann gemessen werden, indem man Bilder macht, ohne den CCD-Sensor zu belichten, sowie die Aufnahmezeit minimal hält. Zudem ist auf Bias-Frames das Ausleserauschen des Sensors zu erkennen, durch Mitteln mehrerer Bias-Frames kann kann dieses Rauschen entfernt werden, wodurch nur mehr der konstante Offset bleibt.  
+Zusätzlich wird eine Flatfield-Korrektur durchgeführt, da die Empfindlichkeit der einzelnen Pixel schwankt. Daher wird der gesamte Sensor gleichmäßig mit einer Lichtquelle belichtet.
+Wenn das CCD so bestrahlt wird, sollte die Reaktion des Sensors bei einem perfekten Sensor konstant sein. Dennoch
+sind in diesen Flatfield-Bildern einige Abweichungen zu erkennen. Um die Rohdaten zu korrigieren, müssen die Daten
+durch die Flatfield-Aufnahmen dividiert werden.
+
+Zudem werden Dark-Frame-Aufnahmen in dem Versuch verwendet. Bei diesen Aufnahmen wird der Sensor keinem Licht ausgesetzt, die Belichtungszeit kann dabei entweder gleich wie für die richtigen Aufnahmen, oder länger gewählt werden. Für längere Belichtungen muss das Ergebis jedoch zeitgemittelt werden. Bei längeren Aufnahmen besteht die Möglichkeit, dass das CCD von einem hochenergetischen Teilchen der kosmischen Strahlung getroffen wird, um diese Signale zu minimieren, werden auch hier mehrere Messungen gemittelt. 
+
+Da wir hier mit Zählereignissen zu tun haben, hat die Poissonstatistik Gültigkeit, welche den Zusammenhang 
+$$\sigma^e=\sqrt{N^e}$$ 
+zwischen der Standardabweichung $\sigma^e$ und der Anzahl $N^e$ erlaubt (vgl. Gl. 2.1 aus \autocite{ccd} ).
+
+

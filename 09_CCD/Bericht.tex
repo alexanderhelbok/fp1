@@ -1,0 +1,50 @@
+% !TeX program = xelatex
+\documentclass{alex_bericht}
+\usepackage[export]{adjustbox}
+
+\def\NFe{N_{\text{Fe}}}
+\def\NH{N_{\text{H}}}
+
+\begin{document}
+%Seiten ohne Kopf- und Fußzeile sowie Seitenzahl
+\pagenumbering{Roman}
+\def\settitle{Eigenschaften optischer CCDs}
+\input{01_titel}
+
+\section*{Abstract}
+In diesem Versuch wird auf die Funktionsweise eines CCD-Sensors eingegangen, mite besonderem Augenmerk auf die Kalibrierung und Korrektur der Rohdaten. Dabei wird das Rohbild schrittweise mittels Bias-, Flatflied- und Dunkelstromaufnahmen kalibriert and analysiert. Dabei können wir den Gain-Faktor des CCD-Sensors, sowie das Ausleserauschen und die full well capacity bestimmen und mit dem Datenblatt vergleichen. Zuletzt bestimmen wir die Bandlücke von Silizium und des Donatorelements.
+\vspace{1.5cm}
+
+
+%Inhaltsverzeichnis
+{\hypersetup{linkcolor=black}
+\clearpage
+\tableofcontents
+
+%Verzeichnis aller Bilder
+%\listoffigures
+
+%Verzeichnis aller Tabellen
+%\listoftables}
+\cleardoubleoddpage
+
+\pagenumbering{arabic}
+\input{02_Einleitung}
+
+\input{03_Theorie}
+%
+%\input{04_Aufbau}
+%
+\input{05_Ergebnisse}
+%
+\input{06_Diskussion}
+%
+\input{08_Appendix}
+
+%%Literaturverzeichnis
+\printbibliography
+\clearpage
+
+\include{07_Unterschriften}
+
+\end{document}
