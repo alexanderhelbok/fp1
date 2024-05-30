@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib import colors
-# from labellines import labelLine, labelLines
+from labellines import labelLine, labelLines
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter, AutoMinorLocator)
 from matplotlib.figure import figaspect
 from scipy.optimize import curve_fit

@@ -1,0 +1,257 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 13.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     10446,        249]
+NotebookOptionsPosition[      9452,        226]
+NotebookOutlinePosition[      9889,        243]
+CellTagsIndexPosition[      9846,        240]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[{
+ RowBox[{"e", ":=", 
+  TemplateBox[<|
+   "query" -> "2 GeV", "boxes" -> 
+    TemplateBox[{
+      "2", "\"GeV\"", "gigaelectronvolts", "\"Gigaelectronvolts\""}, 
+      "Quantity", SyntaxForm -> Mod], 
+    "allassumptions" -> {{
+      "type" -> "Unit", "word" -> "GeV", "template" -> 
+       "Assuming gigaelectronvolts for \"GeV\"${separator}Use ${desc} or \
+${pulldown} instead", "count" -> "4", "pulldown" -> "true", "pulldownlabel" -> 
+       "more >>", "pulldownlength" -> "2", "default" -> 
+       "\"UnitClash\" -> {\"GeV\", {\"Gigaelectronvolts\", \"dflt\"}}", 
+       "Values" -> {{
+         "name" -> "Gigaelectronvolts", "desc" -> "gigaelectronvolts", 
+          "input" -> "\"UnitClash\" -> {\"GeV\", {\"Gigaelectronvolts\"}}"}, {
+         "name" -> "GigaelectronvoltsPerSpeedOfLightSquared", "desc" -> 
+          "gigaelectronvolts per speed of light squared", "input" -> 
+          "\"UnitClash\" -> {\"GeV\", \
+{\"GigaelectronvoltsPerSpeedOfLightSquared\"}}"}, {
+         "name" -> "GigaelectronvoltsPerSpeedOfLight", "desc" -> 
+          "gigaelectronvolts per speed of light", "input" -> 
+          "\"UnitClash\" -> {\"GeV\", \
+{\"GigaelectronvoltsPerSpeedOfLight\"}}"}, {
+         "name" -> "GigaelectronvoltsPerBoltzmannConstant", "desc" -> 
+          "gigaelectronvolts per Boltzmann constant", "input" -> 
+          "\"UnitClash\" -> {\"GeV\", \
+{\"GigaelectronvoltsPerBoltzmannConstant\"}}"}}}}, "assumptions" -> {}, 
+    "open" -> {1, 2}, 
+    "querystate" -> {
+     "Online" -> True, "Allowed" -> True, "mparse.jsp" -> 
+      1.359161`6.5848158978150275, "Messages" -> {}}, "contextinfo" -> 
+    Automatic, "version" -> 5|>,
+   "LinguisticAssistantTemplate"]}], "\[IndentingNewLine]", 
+ RowBox[{"c", ":=", 
+  TemplateBox[<|"query" -> "speed of light", "boxes" -> TemplateBox[{
+       InterpretationBox["\[InvisibleSpace]", 1], 
+       StyleBox["\"c\"", Italic, StripOnInput -> False], "speed of light", 
+       "\"SpeedOfLight\""}, "Quantity", SyntaxForm -> Mod], 
+    "allassumptions" -> {}, "assumptions" -> {}, "open" -> {1, 2}, 
+    "querystate" -> {
+     "Online" -> True, "Allowed" -> True, "mparse.jsp" -> 
+      1.026607`6.462949214701654, "Messages" -> {}}, "contextinfo" -> 
+    Automatic, "version" -> 5|>,
+   "LinguisticAssistantTemplate"]}], "\[IndentingNewLine]", 
+ RowBox[{"m\[Mu]", ":=", 
+  TemplateBox[<|"query" -> "muon mass", "boxes" -> RowBox[{
+       TemplateBox[{"\"muon\"", 
+         RowBox[{"Entity", "[", 
+           RowBox[{"\"Particle\"", ",", "\"Muon\""}], "]"}], 
+         "\"Entity[\\\"Particle\\\", \\\"Muon\\\"]\"", "\"particle\""}, 
+        "Entity"], "[", 
+       TemplateBox[{"\"mass\"", 
+         RowBox[{"EntityProperty", "[", 
+           RowBox[{"\"Particle\"", ",", "\"Mass\""}], "]"}], 
+         "\"EntityProperty[\\\"Particle\\\", \\\"Mass\\\"]\""}, 
+        "EntityProperty"], "]"}], 
+    "allassumptions" -> {{
+      "word" -> "", "template" -> 
+       "Assuming \"muon\" is a particle${separator}Use \"muon mass\" as \
+${desc} instead", "count" -> "2", "pulldown" -> "false", "type" -> 
+       "MultiClash", "default" -> 
+       "{\"MC\", \"muon mass\"} -> {\"Particle\", \"dflt\"}", 
+       "Values" -> {{
+         "name" -> "Particle", "desc" -> "a particle", "input" -> 
+          "{\"MC\", \"muon mass\"} -> {\"Particle\"}", "word" -> "muon"}, {
+         "name" -> "Unit", "desc" -> "a unit", "input" -> 
+          "{\"MC\", \"muon mass\"} -> {\"Unit\"}", "word" -> "muon mass"}}}}, 
+    "assumptions" -> {}, "open" -> {1, 2}, 
+    "querystate" -> {
+     "Online" -> True, "Allowed" -> True, "mparse.jsp" -> 
+      1.201331`6.531207677558274, "Messages" -> {}}, "contextinfo" -> 
+    Automatic, "version" -> 5|>,
+   "LinguisticAssistantTemplate"]}], "\[IndentingNewLine]", 
+ RowBox[{"\[Tau]", ":=", 
+  TemplateBox[<|"query" -> "muon lifetime", "boxes" -> RowBox[{
+       TemplateBox[{"\"muon\"", 
+         RowBox[{"Entity", "[", 
+           RowBox[{"\"Particle\"", ",", "\"Muon\""}], "]"}], 
+         "\"Entity[\\\"Particle\\\", \\\"Muon\\\"]\"", "\"particle\""}, 
+        "Entity"], "[", 
+       TemplateBox[{"\"mean lifetime\"", 
+         RowBox[{"EntityProperty", "[", 
+           RowBox[{"\"Particle\"", ",", "\"Lifetime\""}], "]"}], 
+         "\"EntityProperty[\\\"Particle\\\", \\\"Lifetime\\\"]\""}, 
+        "EntityProperty"], "]"}], "allassumptions" -> {}, "assumptions" -> {},
+     "open" -> {1, 2}, 
+    "querystate" -> {
+     "Online" -> True, "Allowed" -> True, "mparse.jsp" -> 
+      0.792743`6.350677409348309, "Messages" -> {}}, "contextinfo" -> 
+    Automatic, "version" -> 5|>,
+   "LinguisticAssistantTemplate"]}], "\[IndentingNewLine]", 
+ RowBox[{"\[Gamma]", ":=", 
+  RowBox[{"1", "/", 
+   RowBox[{"(", 
+    RowBox[{"1", "-", 
+     RowBox[{"\[Beta]", "^", "2"}]}], ")"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"\[Beta]sol", ":=", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"Solve", "[", 
+     RowBox[{
+      RowBox[{"e", "==", 
+       RowBox[{"m\[Mu]", "*", 
+        RowBox[{"c", "^", "2"}], 
+        RowBox[{"(", 
+         RowBox[{"\[Gamma]", "-", "1"}], ")"}]}]}], ",", "\[Beta]"}], "]"}], 
+    "[", 
+    RowBox[{"[", "2", "]"}], "]"}], "[", 
+   RowBox[{"[", "1", "]"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"tclass", ":=", "\[Tau]"}], "\[IndentingNewLine]", 
+ RowBox[{"trel", ":=", 
+  RowBox[{
+   RowBox[{"\[Tau]", "*", "\[Gamma]"}], "/.", 
+   "\[Beta]sol"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"tclass", "*", 
+   RowBox[{"Sqrt", "[", 
+    RowBox[{"2", "*", 
+     RowBox[{"e", "/", "m\[Mu]"}]}], "]"}]}], "//", 
+  "UnitConvert"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"tclass", "*", "c", "*", "\[Beta]"}], "/.", "\[Beta]sol"}], " ", "//",
+   "UnitConvert"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"trel", "*", "c", "*", "\[Beta]"}], "/.", "\[Beta]sol"}], " ", "//",
+   "UnitConvert"}], "\[IndentingNewLine]"}], "Input",
+ CellChangeTimes->{{3.9258727728934402`*^9, 3.925872947430738*^9}, {
+  3.925873309051669*^9, 3.925873575364604*^9}, {3.9258747957564707`*^9, 
+  3.925874851144154*^9}},
+ CellLabel->"In[1]:=",ExpressionUUID->"55d98422-6ca2-4b85-9598-8b93a07243c3"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "4052.627620182520442053`5.999978285818756", "\"m\"", "meters", 
+   "\"Meters\""},
+  "Quantity"]], "Output",
+ CellChangeTimes->{
+  3.925872840616445*^9, {3.925872923516652*^9, 3.925872948044957*^9}, {
+   3.925873370301537*^9, 3.92587357590279*^9}, 3.9258748034580183`*^9, {
+   3.9258748491967793`*^9, 3.925874851477072*^9}, 3.9258995282953987`*^9},
+ CellLabel->"Out[9]=",ExpressionUUID->"72c87cf5-d862-4f9b-8cb9-50f797ec357c"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "Solve", "ratnz", 
+   "\"Solve was unable to solve the system with inexact coefficients. The \
+answer was obtained by solving a corresponding exact system and numericizing \
+the result.\"", 2, 10, 1, 17239577150043461901, "Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{3.9258995283288918`*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"9e5935fc-09e8-4dfc-8474-225681e99be6"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "641.9182288176333164147`5.999956572723137", "\"m\"", "meters", 
+   "\"Meters\""},
+  "Quantity"]], "Output",
+ CellChangeTimes->{
+  3.925872840616445*^9, {3.925872923516652*^9, 3.925872948044957*^9}, {
+   3.925873370301537*^9, 3.92587357590279*^9}, 3.9258748034580183`*^9, {
+   3.9258748491967793`*^9, 3.925874851477072*^9}, 3.925899528342431*^9},
+ CellLabel->"Out[10]=",ExpressionUUID->"72ed881c-d202-4078-98c7-eb0c05edcdc5"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "Solve", "ratnz", 
+   "\"Solve was unable to solve the system with inexact coefficients. The \
+answer was obtained by solving a corresponding exact system and numericizing \
+the result.\"", 2, 11, 2, 17239577150043461901, "Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{3.925899528346566*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"7215acd5-d0d6-461e-8a95-721c8880928a"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "Solve", "ratnz", 
+   "\"Solve was unable to solve the system with inexact coefficients. The \
+answer was obtained by solving a corresponding exact system and numericizing \
+the result.\"", 2, 11, 3, 17239577150043461901, "Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{3.925899528351117*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"598abf42-6e7f-4ca8-9b3d-5270c82bfdcf"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "12792.7436007807692150414`5.998315694871117", "\"m\"", "meters", 
+   "\"Meters\""},
+  "Quantity"]], "Output",
+ CellChangeTimes->{
+  3.925872840616445*^9, {3.925872923516652*^9, 3.925872948044957*^9}, {
+   3.925873370301537*^9, 3.92587357590279*^9}, 3.9258748034580183`*^9, {
+   3.9258748491967793`*^9, 3.925874851477072*^9}, 3.925899528356905*^9},
+ CellLabel->"Out[11]=",ExpressionUUID->"ee9d89d3-6193-487d-900b-8a01dcbc7760"]
+}, Open  ]]
+},
+WindowSize->{606, 683.25},
+WindowMargins->{{Automatic, 225}, {1.5, Automatic}},
+TaggingRules-><|"TryRealOnly" -> False|>,
+FrontEndVersion->"13.3 for Linux x86 (64-bit) (July 24, 2023)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"a6680d41-48df-4a4e-b3fa-1daac60d5770"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 6118, 132, 330, "Input",ExpressionUUID->"55d98422-6ca2-4b85-9598-8b93a07243c3"],
+Cell[6701, 156, 457, 9, 44, "Output",ExpressionUUID->"72c87cf5-d862-4f9b-8cb9-50f797ec357c"],
+Cell[7161, 167, 451, 10, 47, "Message",ExpressionUUID->"9e5935fc-09e8-4dfc-8474-225681e99be6"],
+Cell[7615, 179, 456, 9, 44, "Output",ExpressionUUID->"72ed881c-d202-4078-98c7-eb0c05edcdc5"],
+Cell[8074, 190, 449, 10, 47, "Message",ExpressionUUID->"7215acd5-d0d6-461e-8a95-721c8880928a"],
+Cell[8526, 202, 449, 10, 47, "Message",ExpressionUUID->"598abf42-6e7f-4ca8-9b3d-5270c82bfdcf"],
+Cell[8978, 214, 458, 9, 44, "Output",ExpressionUUID->"ee9d89d3-6193-487d-900b-8a01dcbc7760"]
+}, Open  ]]
+}
+]
+*)
+
