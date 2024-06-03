@@ -28,12 +28,12 @@ err(Nmean)
 h = np.histogram(df.N, bins = [minimum(df.N):1:maximum(df.N);], density = false)
 # convert to julia array
 hy = pyconvert(Array, h[0])
-hx = pyconvert(Array, h[1])[1:end-1] .+ 0.5
+hx = pyconvert(Array, h[1])[1:end-1]
 # fit gauss to histogram
-gauss(x, p) = @. 400/(p[2]*sqrt(2*pi)) * exp(-0.5 * ((x - p[1])/p[2])^2)
+gauss(x, p) = @. p[3]/(p[2]*sqrt(2*pi)) * exp(-0.5 * ((x - p[1])/p[2])^2)
 # poisson(x, p) = @. 400 * exp(-p[1]) * p[1]^x / gamma(x + 1)
 
-popt, ci = bootstrap(gauss, hx, hy, p0=[μ, σ], unc=true, its=10000, redraw=true)
+popt, ci = bootstrap(gauss, hx, hy, p0=[μ, σ, 400], unc=true, its=10000, redraw=true, p=0.68)
 # popt2, ci2 = bootstrap(poisson, hx, hy, p0=[μ], unc=true, its=10000, redraw=false)
 
 # calculate chi2
@@ -49,19 +49,24 @@ ax.hist(df.N,
         label="Messwerte",
         edgecolor="black",
         alpha=0.5,
-        align="mid",
+        align="left",
         zorder=0) 
 ax.scatter(hx, gauss(hx, nom.(popt)), c="crimson", edgecolor="black", label="Gaussverteilung", s=40)
-ax.fill_between(ci.x, ci.c0, ci.c1, color="crimson", alpha=0.2, label=L"1\sigma\ \mathrm{Konfidenzband}")
+ax.fill_between(ci.x, ci.c0, ci.c1, color="crimson", alpha=0.3, label=L"1\sigma\ \mathrm{Konfidenzband}")
 
 ax.plot(ci.x, gauss(ci.x, nom.(popt)), c="black", zorder=0, ls="--")   
 # ax.plot(ci2.x, poisson(ci2.x, nom.(popt2)), c="black", zorder=0, ls="--")
 # ax.scatter(hx, poisson(hx, nom.(popt2)), c="gold", edgecolor="black", label="Poissonverteilung", s=40)
 
-text(0.04, 0.85, L"\mu = 23.8(4)", fontsize=14, transform=ax.transAxes)
-text(0.04, 0.77, L"\sigma = 4.6(2)", fontsize=14, transform=ax.transAxes)
-rect = mpl.patches.FancyBboxPatch((0.05, 0.75), 0.17, 0.16, linewidth=1.5, edgecolor="crimson", facecolor="none", transform=ax.transAxes, boxstyle=mpl.patches.BoxStyle("Round", pad=0.02))
+text(0.05, 0.88, L"A = 4.0(2) \cdot 10^{2}", fontsize=14, transform=ax.transAxes)
+text(0.05, 0.8, L"\mu = 23.3(3)", fontsize=14, transform=ax.transAxes)
+text(0.05, 0.72, L"\sigma = 4.6(3)", fontsize=14, transform=ax.transAxes)
+rect = mpl.patches.FancyBboxPatch((0.06, 0.7), 0.2, 0.24, linewidth=1.5, edgecolor="crimson", facecolor="none", transform=ax.transAxes, boxstyle=mpl.patches.BoxStyle("Round", pad=0.02))
 ax.add_patch(rect)
+
+ax.tick_params(axis="x", which="minor", bottom=false, top=false)
+ax.tick_params(axis="x", which="major", top=false, direction="out", length=4)
+# ax.set_xticks(np.arange(0, 20, 2, dtype=Int))
 
 # text(0.04, 0.6, L"\mu = 24.0(3)", fontsize=14, transform=ax.transAxes)
 # rect = mpl.patches.FancyBboxPatch((0.05, 0.58), 0.17, 0.08, linewidth=1.5, edgecolor="gold", facecolor="none", transform=ax.transAxes, boxstyle=mpl.patches.BoxStyle("Round", pad=0.02))
@@ -81,8 +86,9 @@ hx = hx[hy .> 0]
 hy = hy[hy .> 0]
 hyerr = sqrt.(hy)
 
-popt, ci = bootstrap(gauss, hx, hy, p0=[μ, σ], yerr=hyerr, unc=true, its=10000, redraw=true, p=0.68)
-chisq(hy, gauss(hx, nom.(popt)), sigma=hyerr, dof = length(hy) - 2)
+popt, ci = bootstrap(gauss, hx, hy, p0=[μ, σ, 400], yerr=hyerr, unc=true, its=10000, redraw=false, p=0.68)
+1000/popt[1]
+chisq(hy, gauss(hx, nom.(popt)), sigma=hyerr, dof = length(hy) - 3)
 begin
 ax = subplots(figsize = (7, 4.2))[1]
 ax.hist(df.N,
@@ -91,26 +97,27 @@ ax.hist(df.N,
         label="Messwerte",
         edgecolor="black",
         alpha=0.5,
-        align="mid",
+        align="left",
         zorder=0)
 c = ax.scatter(hx, gauss(hx, nom.(popt)), c="crimson", edgecolor="black", s=40, zorder=10)
-d = ax.fill_between(ci.x, ci.c0, ci.c1, color="crimson", alpha=0.4, zorder=5)
+d = ax.fill_between(ci.x, ci.c0, ci.c1, color="crimson", alpha=0.3, zorder=5)
 
-# add uncertainties as dashed histogram
+# add uncertainties as dashed histogram 
 b, = ax.bar(hx, 2*hyerr, bottom=hy-hyerr, color="none", edgecolor="black", hatch="xxxx", lw=1, zorder=4, alpha=0.7)
 # ax.bar(hx, 2*hystd, bottom=hy-hystd, color="none", edgecolor="black", hatch="\\\\", lw=0, label="Statistische Unsicherheit", zorder=0)
 ax.plot(ci.x, gauss(ci.x, nom.(popt)), c="black", zorder=0, ls="--")
 # ax.plot(ci2.x, poisson(ci2.x, nom.(popt2)), c="black", zorder=0, ls="--")
 # ax.scatter(hx, poisson(hx, nom.(popt2)), c="gold", edgecolor="black", label="Poissonverteilung", s=40)
 
-text(0.04, 0.85, L"\mu = 23.8(5)", fontsize=14, transform=ax.transAxes)
-text(0.04, 0.77, L"\sigma = 4.6(4)", fontsize=14, transform=ax.transAxes)
-rect = mpl.patches.FancyBboxPatch((0.05, 0.75), 0.17, 0.16, linewidth=1.5, edgecolor="crimson", facecolor="none", transform=ax.transAxes, boxstyle=mpl.patches.BoxStyle("Round", pad=0.02))
+text(0.05, 0.88, L"A = 4.0(3) \cdot 10^{2}", fontsize=14, transform=ax.transAxes)
+text(0.05, 0.8, L"\mu = 23.3(3)", fontsize=14, transform=ax.transAxes)
+text(0.05, 0.72, L"\sigma = 4.6(3)", fontsize=14, transform=ax.transAxes)
+text(0.05, 0.64, L"\chi_\nu = 1.19", fontsize=14, transform=ax.transAxes)
+rect = mpl.patches.FancyBboxPatch((0.06, 0.63), 0.2, 0.31, linewidth=1.5, edgecolor="crimson", facecolor="none", transform=ax.transAxes, boxstyle=mpl.patches.BoxStyle("Round", pad=0.02))
 ax.add_patch(rect)
 
-# text(0.04, 0.6, L"\mu = 24.0(3)", fontsize=14, transform=ax.transAxes)
-# rect = mpl.patches.FancyBboxPatch((0.05, 0.58), 0.17, 0.08, linewidth=1.5, edgecolor="gold", facecolor="none", transform=ax.transAxes, boxstyle=mpl.patches.BoxStyle("Round", pad=0.02))
-# ax.add_patch(rect)
+ax.tick_params(axis="x", which="minor", bottom=false, top=false)
+ax.tick_params(axis="x", which="major", top=false, direction="out", length=4)
 
 xlabel(L"N")
 ylabel(L"\mathrm{Absolute\ Haufigkeit}")
@@ -139,11 +146,15 @@ htot = sum(hy)
 # calculate values
 tmin = minimum(df.N)
 tmax = maximum(df.N)
-tmean = sum(hx .* hy) / htot
+tstd = std(df.N)
+tmean = sum(hx .* hy) / htot ± tstd / sqrt(htot)
+err(tmean)/nom(tmean)
 
 # fit exp
-model(x, p) = @. 2*htot/p[1] * exp(-x/p[1])
-popt, ci = bootstrap(model, hx, hy, p0=[50.], yerr=hyerr, unc=true, its=10000, redraw=false, p=0.68)
+model(x, p) = @. 2*p[2]/p[1] * exp(-x/p[1])
+popt, ci = bootstrap(model, hx, hy, p0=[50., htot], yerr=hyerr, unc=true, its=10000, redraw=false, p=0.68)
+
+1000/popt[1]
 
 # cut ci where y = 1
 ci = ci[model(ci.x, nom.(popt)) .> 1, :]
@@ -156,9 +167,10 @@ xlims, ylims = ax.get_xlim(), ax.get_ylim()
 ax.plot(ci.x, model(ci.x, nom.(popt)), color="crimson", label=L"\mathrm{Fit}", zorder=10, lw=2)
 # ax.fill_between(ci.x, ci.c0, ci.c1, color="C1", alpha=0.5, label=L"1\sigma\ \mathrm{Konfidenzband}", zorder=8)
 
-text(0.03, 0.21, L"N(\Delta t) = \frac{2N}{T_m}\exp\left( \frac{\Delta t}{T_m} \right)", fontsize=14, transform=ax.transAxes)
-text(0.03, 0.07, L"T_m = 43.4(1.5)\ \mathrm{ms}", fontsize=14, transform=ax.transAxes)
-rect = mpl.patches.FancyBboxPatch((0.04, 0.06), 0.31, 0.23, linewidth=1.5, edgecolor="crimson", facecolor="none", transform=ax.transAxes, boxstyle=mpl.patches.BoxStyle("Round", pad=0.02))
+text(0.63, 0.86, L"N(\Delta t) = \frac{2N_0}{T_m}\exp\left( \frac{\Delta t}{T_m} \right)", fontsize=14, transform=ax.transAxes)
+text(0.63, 0.72, L"N_{\text{ges}} = 2.44(6)\cdot 10^3", fontsize=14, transform=ax.transAxes)
+text(0.63, 0.65, L"T_m = 42.3(1.6)\ \mathrm{ms}", fontsize=14, transform=ax.transAxes)
+rect = mpl.patches.FancyBboxPatch((0.64, 0.63), 0.32, 0.32, linewidth=1.5, edgecolor="crimson", facecolor="none", transform=ax.transAxes, boxstyle=mpl.patches.BoxStyle("Round", pad=0.02))
 ax.add_patch(rect)
 
 yscale("log")
@@ -168,7 +180,7 @@ ylim(ylims)
 xlabel(L"\Delta t\ (\mathrm{ms})")
 ylabel(L"\mathrm{Absolute\ Haufigkeit}")
 
-legend()
+legend(loc="lower left")
 tight_layout()
 # savefig(string(@__DIR__, "/bilder/exp1.pdf"))
 end
@@ -193,9 +205,12 @@ popt, ci = bootstrap(model, hx[2:end], hy[2:end], p0=[3., 18., 2000.], yerr=hyer
 chisq(hy[2:end], model(hx[2:end], nom.(popt)), sigma=hyerr[2:end], dof = length(hy) - 3)
 
 # interpolate exo to 0
-model(0, popt)
+model(0, popt)  
 # integrate exp
 -2*popt[3]*(exp(-1e3/popt[1]) - 1)
+
+texp = 3.3 ± 0.1
+(model(texp, popt) - popt[2])/model(texp, popt)
 
 # cut ci where y = 1
 ci = ci[model(ci.x, nom.(popt)) .> 1, :]
@@ -225,7 +240,7 @@ ylabel(L"\mathrm{Absolute\ Haufigkeit\ } N")
 
 legend(loc="lower left")
 tight_layout()
-savefig(string(@__DIR__, "/bilder/exp2.pdf"))   
+# savefig(string(@__DIR__, "/bilder/exp2.pdf"))   
 end
 
 x = [1:50;]
@@ -245,16 +260,20 @@ for i in x
 end
 
 [print("$(round(i, digits=2)),") for i in chis]
-
+labels = [L"\tau", L"N", L"c", L"\chi_\nu^2"]
 # plot data
 begin
 ax = subplots(4, 1, figsize = (7, 6), sharex=true)[1]
 for (i, y) in enumerate([taus, Ns, cs, chis])
-    ax[i-1].errorbar(x, nom.(y), yerr=err.(y), fmt="o", capsize=3)
+    ax[i-1].errorbar(x[2:end], nom.(y)[2:end], yerr=err.(y)[2:end], fmt="o", capsize=3, label=labels[i])
+    # ax[i-1].legend()
 end
-# xlabel(L"\mathrm{Startwert\ für\ Fit}")
-# ylabel(ax[1], L"\chi^2")
-# ylabel(ax[2], L"\tau\ (\mu\mathrm{s})")
-# ylabel(ax[3], L"N_{\mathrm{ges}}")
+xlabel(L"\textrm{Startwert\ für\ Fit}")
+ax[3].set_ylabel(L"\chi_\nu^2")
+ax[0].set_ylabel(L"\tau\ (\mu\mathrm{s})")
+ax[1].set_ylabel(L"N_{\mathrm{ges}}")
+ax[2].set_ylabel(L"c")
+
 tight_layout()
+# savefig(string(@__DIR__, "/bilder/test.pdf"), bbox_inches="tight")
 end
