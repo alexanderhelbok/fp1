@@ -107,13 +107,13 @@ scatter(nom.(x2), y2, label = L"\mathrm{Data}", color = "black", s = 10)
 xlims, ylims = ax.get_xlim(), ax.get_ylim()
 # scatter data where x > -3.3
 # mark region using fill_between
-fill_betweenx([-10, 0], -3.325, color = "crimson", alpha = 0.2)
+fill_betweenx([-10, 0], -3.35, color = "crimson", alpha = 0.2)
 
 text(0.36, .14, L"\mathrm{Linear\ regime}", ha = "right", color = "k", fontsize=14, transform=ax.transAxes)
-text(0.36, .05, L"\propto N_i", color = "k", ha = "right", fontsize=14, transform=ax.transAxes)
+text(0.36, .05, L"\propto N", color = "k", ha = "right", fontsize=14, transform=ax.transAxes)
 
 text(0.43, .14, L"\mathrm{Saturation\ regime}", color = "crimson", fontsize=14, transform=ax.transAxes)
-text(0.43, .05, L"\propto \sqrt{\ln N_i}", color = "crimson", fontsize=14, transform=ax.transAxes)
+text(0.43, .05, L"\propto \sqrt{\ln N}", color = "crimson", fontsize=14, transform=ax.transAxes)
 scatter(nom.(x2[x2 .> -3.35]), y2[x2 .> -3.35], label = L"\mathrm{Excluded\ data}", color = "crimson", s = 10)
 
 # plot 45° line
@@ -130,7 +130,6 @@ tight_layout()
 # savefig(string(@__DIR__, "/bilder/exclude2.pdf"))
 end
 
-data
 data2 = data[-4.5 .< x .< -3.35, :]
 
 y = @. log(10, data2.Wf/data2.fit_lam^2) - data2.loggf

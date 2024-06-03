@@ -51,8 +51,8 @@ ax.hist(df.N,
         alpha=0.5,
         align="mid",
         zorder=0) 
-ax.scatter(hx, gauss(hx, nom.(popt)), c="mediumorchid", edgecolor="black", label="Gaussverteilung", s=40)
-ax.fill_between(ci.x, ci.c0, ci.c1, color="mediumorchid", alpha=0.2, label=L"1\sigma\ \mathrm{Konfidenzband}")
+ax.scatter(hx, gauss(hx, nom.(popt)), c="crimson", edgecolor="black", label="Gaussverteilung", s=40)
+ax.fill_between(ci.x, ci.c0, ci.c1, color="crimson", alpha=0.2, label=L"1\sigma\ \mathrm{Konfidenzband}")
 
 ax.plot(ci.x, gauss(ci.x, nom.(popt)), c="black", zorder=0, ls="--")   
 # ax.plot(ci2.x, poisson(ci2.x, nom.(popt2)), c="black", zorder=0, ls="--")
@@ -60,7 +60,7 @@ ax.plot(ci.x, gauss(ci.x, nom.(popt)), c="black", zorder=0, ls="--")
 
 text(0.04, 0.85, L"\mu = 23.8(4)", fontsize=14, transform=ax.transAxes)
 text(0.04, 0.77, L"\sigma = 4.6(2)", fontsize=14, transform=ax.transAxes)
-rect = mpl.patches.FancyBboxPatch((0.05, 0.75), 0.17, 0.16, linewidth=1.5, edgecolor="mediumorchid", facecolor="none", transform=ax.transAxes, boxstyle=mpl.patches.BoxStyle("Round", pad=0.02))
+rect = mpl.patches.FancyBboxPatch((0.05, 0.75), 0.17, 0.16, linewidth=1.5, edgecolor="crimson", facecolor="none", transform=ax.transAxes, boxstyle=mpl.patches.BoxStyle("Round", pad=0.02))
 ax.add_patch(rect)
 
 # text(0.04, 0.6, L"\mu = 24.0(3)", fontsize=14, transform=ax.transAxes)
@@ -68,21 +68,21 @@ ax.add_patch(rect)
 # ax.add_patch(rect)
 
 xlabel(L"N")
-ylabel(L"\mathrm{Absolute Haufigkeit}")
+ylabel(L"\mathrm{Absolute\ Haufigkeit}")
 
 legend(labels=[L"\mathrm{Messwerte}", L"\mathrm{Gaussverteilung}", L"1\sigma\ \mathrm{Konfidenzband}"])
 tight_layout()
-savefig(string(@__DIR__, "/bilder/gauss1.pdf"), bbox_inches="tight")
+# savefig(string(@__DIR__, "/bilder/gauss1.pdf"), bbox_inches="tight")
 end
 
 # do the same with errors
 # drop 0 in data
 hx = hx[hy .> 0]
 hy = hy[hy .> 0]
-hystd = sqrt.(hy)
+hyerr = sqrt.(hy)
 
-popt, ci = bootstrap(gauss, hx, hy, p0=[μ, σ], yerr=hystd, unc=true, its=10000, redraw=true, p=0.68)
-chisq(hy, gauss(hx, nom.(popt)), sigma=hystd, dof = length(hy) - 2)
+popt, ci = bootstrap(gauss, hx, hy, p0=[μ, σ], yerr=hyerr, unc=true, its=10000, redraw=true, p=0.68)
+chisq(hy, gauss(hx, nom.(popt)), sigma=hyerr, dof = length(hy) - 2)
 begin
 ax = subplots(figsize = (7, 4.2))[1]
 ax.hist(df.N,
@@ -93,11 +93,11 @@ ax.hist(df.N,
         alpha=0.5,
         align="mid",
         zorder=0)
-ax.scatter(hx, gauss(hx, nom.(popt)), c="crimson", edgecolor="black", s=40, label="b", zorder=10)
-ax.fill_between(ci.x, ci.c0, ci.c1, color="crimson", alpha=0.2, zorder=5, label="a")
+c = ax.scatter(hx, gauss(hx, nom.(popt)), c="crimson", edgecolor="black", s=40, zorder=10)
+d = ax.fill_between(ci.x, ci.c0, ci.c1, color="crimson", alpha=0.4, zorder=5)
 
 # add uncertainties as dashed histogram
-ax.bar(hx, 2*hystd, bottom=hy-hystd, color="none", edgecolor="gray", hatch="xxxx", lw=0, zorder=4, alpha=0.9, label="a")
+b, = ax.bar(hx, 2*hyerr, bottom=hy-hyerr, color="none", edgecolor="black", hatch="xxxx", lw=1, zorder=4, alpha=0.7)
 # ax.bar(hx, 2*hystd, bottom=hy-hystd, color="none", edgecolor="black", hatch="\\\\", lw=0, label="Statistische Unsicherheit", zorder=0)
 ax.plot(ci.x, gauss(ci.x, nom.(popt)), c="black", zorder=0, ls="--")
 # ax.plot(ci2.x, poisson(ci2.x, nom.(popt2)), c="black", zorder=0, ls="--")
@@ -105,7 +105,7 @@ ax.plot(ci.x, gauss(ci.x, nom.(popt)), c="black", zorder=0, ls="--")
 
 text(0.04, 0.85, L"\mu = 23.8(5)", fontsize=14, transform=ax.transAxes)
 text(0.04, 0.77, L"\sigma = 4.6(4)", fontsize=14, transform=ax.transAxes)
-rect = mpl.patches.FancyBboxPatch((0.05, 0.75), 0.17, 0.16, linewidth=1.5, edgecolor="mediumorchid", facecolor="none", transform=ax.transAxes, boxstyle=mpl.patches.BoxStyle("Round", pad=0.02))
+rect = mpl.patches.FancyBboxPatch((0.05, 0.75), 0.17, 0.16, linewidth=1.5, edgecolor="crimson", facecolor="none", transform=ax.transAxes, boxstyle=mpl.patches.BoxStyle("Round", pad=0.02))
 ax.add_patch(rect)
 
 # text(0.04, 0.6, L"\mu = 24.0(3)", fontsize=14, transform=ax.transAxes)
@@ -113,11 +113,13 @@ ax.add_patch(rect)
 # ax.add_patch(rect)
 
 xlabel(L"N")
-ylabel(L"\mathrm{Absolute Haufigkeit}")
+ylabel(L"\mathrm{Absolute\ Haufigkeit}")
 
-legend(labels=[L"\mathrm{Messwerte}", L"\mathrm{Gaussverteilung}", L"1\sigma \mathrm{Konfidenzband}", L"\mathrm{Unsicherheit}", "a"])
+handles, keys = ax.get_legend_handles_labels()
+
+legend(handles = [handles[0], b, c, d], labels=[L"\mathrm{Messwerte}", L"\mathrm{Unsicherheit}", L"\mathrm{Gaussverteilung}", L"1\sigma\ \mathrm{Konfidenzband}"])
 tight_layout()
-# savefig(string(@__DIR__, "/../bilder/gauss2.pdf"), bbox_inches="tight")
+# savefig(string(@__DIR__, "/bilder/gauss2.pdf"), bbox_inches="tight")
 end
 
 
@@ -154,9 +156,9 @@ xlims, ylims = ax.get_xlim(), ax.get_ylim()
 ax.plot(ci.x, model(ci.x, nom.(popt)), color="crimson", label=L"\mathrm{Fit}", zorder=10, lw=2)
 # ax.fill_between(ci.x, ci.c0, ci.c1, color="C1", alpha=0.5, label=L"1\sigma\ \mathrm{Konfidenzband}", zorder=8)
 
-text(0.03, 0.2, L"N(\Delta t) = \frac{2N}{T_m}\exp\left( \frac{\Delta t}{T_m} \right)", fontsize=14, transform=ax.transAxes)
-text(0.03, 0.1, L"T_m = 43.4(1.5)\ \mathrm{ms}", fontsize=14, transform=ax.transAxes)
-rect = mpl.patches.FancyBboxPatch((0.04, 0.09), 0.29, 0.18, linewidth=1.5, edgecolor="crimson", facecolor="none", transform=ax.transAxes, boxstyle=mpl.patches.BoxStyle("Round", pad=0.02))
+text(0.03, 0.21, L"N(\Delta t) = \frac{2N}{T_m}\exp\left( \frac{\Delta t}{T_m} \right)", fontsize=14, transform=ax.transAxes)
+text(0.03, 0.07, L"T_m = 43.4(1.5)\ \mathrm{ms}", fontsize=14, transform=ax.transAxes)
+rect = mpl.patches.FancyBboxPatch((0.04, 0.06), 0.31, 0.23, linewidth=1.5, edgecolor="crimson", facecolor="none", transform=ax.transAxes, boxstyle=mpl.patches.BoxStyle("Round", pad=0.02))
 ax.add_patch(rect)
 
 yscale("log")
@@ -168,6 +170,7 @@ ylabel(L"\mathrm{Absolute\ Haufigkeit}")
 
 legend()
 tight_layout()
+# savefig(string(@__DIR__, "/bilder/exp1.pdf"))
 end
 
 
@@ -200,17 +203,18 @@ ci = ci[model(ci.x, nom.(popt)) .> 1, :]
 begin
 ax = subplots(figsize = (7, 4.2))[1]
 ax.errorbar(hx, hy, yerr=hyerr, mfc="C0", fmt="o", capsize=3, label=L"\mathrm{Messwerte}", color="black", zorder=5)
+ax.errorbar(hx[1], hy[1], yerr=hyerr[1], mfc="white", fmt="o", capsize=3, color="black", zorder=5)
 yscale("log")
 xlims, ylims = ax.get_xlim(), ax.get_ylim()
 
 ax.plot(ci.x, model(ci.x, nom.(popt)), color="crimson", label=L"\mathrm{Fit}", zorder=10, lw=2)
 # ax.fill_between(ci.x, ci.c0, ci.c1, color="C1", alpha=0.5, label=L"1\sigma\ \mathrm{Konfidenzband}", zorder=8)
 
-text(0.43, 0.85, L"N(\Delta t) = \frac{N_{\mathrm{ges}}}{10\tau}\exp\left( \frac{\Delta t}{\tau} \right) + c ", fontsize=14, transform=ax.transAxes)
+text(0.43, 0.87, L"N(\Delta t) = \frac{N_{\mathrm{ges}}}{10\tau}\exp\left( \frac{\Delta t}{\tau} \right) + c ", fontsize=14, transform=ax.transAxes)
 text(0.43, 0.75, L"\tau = 2.00(3)\  \mu\mathrm{s}", fontsize=14, transform=ax.transAxes)
 text(0.43, 0.65, L"N_{\mathrm{ges}} = 2.41(2) \cdot 10^4", fontsize=14, transform=ax.transAxes)
 text(0.43, 0.55, L"c = 17.9(5)", fontsize=14, transform=ax.transAxes)
-rect = mpl.patches.FancyBboxPatch((0.44, 0.53), 0.35, 0.4, linewidth=1.5, edgecolor="crimson", facecolor="none", transform=ax.transAxes, boxstyle=mpl.patches.BoxStyle("Round", pad=0.02))
+rect = mpl.patches.FancyBboxPatch((0.44, 0.53), 0.38, 0.42, linewidth=1.5, edgecolor="crimson", facecolor="none", transform=ax.transAxes, boxstyle=mpl.patches.BoxStyle("Round", pad=0.02))
 ax.add_patch(rect)
 
 xlim(xlims)
@@ -221,6 +225,7 @@ ylabel(L"\mathrm{Absolute\ Haufigkeit\ } N")
 
 legend(loc="lower left")
 tight_layout()
+savefig(string(@__DIR__, "/bilder/exp2.pdf"))   
 end
 
 x = [1:50;]
